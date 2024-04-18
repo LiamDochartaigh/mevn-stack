@@ -30,20 +30,14 @@ app.use(limiter);
 app.set('trust proxy', 1);
 
 db.mongoose.set("strictQuery", false);
-db.mongoose.connect(db.url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  dbName: process.env.DB_NAME
-});
-
-console.log(db.url);
+db.mongoose.connect(db.url)
 
 db.mongoose.connection.on('error', (error) => {
   console.error('Connection error:', error);
   // Add your error handling code here
 });
 
-db.mongoose.connection .once('open', () => {
+db.mongoose.connection.once('open', () => {
   console.log('Database connection successful');
 });
 

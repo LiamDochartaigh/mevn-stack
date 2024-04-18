@@ -1,11 +1,11 @@
 const { User } = require("../models/userModel");
 const { GenerateJWT, GenerateRefreshToken } = require("./authService");
 const { sendEmail } = require("./emailService");
+const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
-  if (user.role != 'admin' && process.env.ACCESS_LEVEL == 'closed') { throw new Error("Access Denied"); }
   user = await User.create({ email, password });
   
   const confirmationToken = crypto.randomBytes(20).toString('hex'); 
@@ -13,11 +13,10 @@ async function RegisterUser(email, password) {
   user.confirmation_token_expires = Date.now() + 3600000;
   await user.save();
   
-  await sendEmail({
-    to: user.email,
-    subject: "Please Confirm Your Email",
-    text: `Please click this link to confirm your email: ${process.env.CLIENT_URL}/confirm-email?token=${confirmationToken}`
-  });
+  await sendEmail(
+  user.email,
+  "Please Verify Your Hexeum Account", 
+  `Please click this link to confirm your email: ${process.env.CLIENT_URL}/confirm-email?token=${confirmationToken}`);
 
   await AuthenticateUser(user);
   return user;

@@ -14,11 +14,11 @@ const confirmEmail = async (req, res, next) => {
     try {
         const token = req.query.token;
         await userService.ConfirmEmail(token);
-        res.status(200).json({ message: "Email confirmed successfully" });
+        res.status(200).json({ message: "Email confirmed." });
     }
     catch (e) {
-        res.status(400).json({ message: e.message });
-    }
+        console.error("Error Confirming Email:", e.message);
+        res.status(400).json({ message: "An error occured. Please Try Again Later." });    }
 }
 
 const registerUser = async (req, res, next) => {
@@ -31,7 +31,8 @@ const registerUser = async (req, res, next) => {
         res.sendStatus(201);
     }
     catch (e) {
-        res.status(400).json({ message: e.message });
+        console.error("Error Registering User:", e.message);
+        res.status(400).json({ message: "An error occured. Please Try Again Later." });
     }
 }
 
@@ -44,7 +45,8 @@ const refreshUser = async (req, res, next) => {
         res.sendStatus(200);
     }
     catch (e) {
-        res.status(400).json({ message: e.message });
+        console.error("Error refreshing user:", e.message);
+        res.status(400).json({ message: "An error occured. Please Try Again Later." });
     }
 }
 
