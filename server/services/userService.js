@@ -1,6 +1,6 @@
 const { User } = require("../models/userModel");
 const { GenerateJWT, GenerateRefreshToken } = require("./authService");
-const { sendEmail } = require("./emailService");
+const { sendConfirmationEmail } = require("./emailService");
 const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
@@ -13,10 +13,10 @@ async function RegisterUser(email, password) {
   user.confirmation_token_expires = Date.now() + 3600000;
   await user.save();
   
-  await sendEmail(
+  await sendConfirmationEmail(
   user.email,
-  "Please Verify Your Hexeum Account", 
-  `Please click this link to confirm your email: ${process.env.CLIENT_URL}/confirm-email?token=${confirmationToken}`);
+  "Please Verify Your Hexeum Account",
+  `${process.env.CLIENT_URL}/activate/${confirmationToken}`);
 
   await AuthenticateUser(user);
   return user;

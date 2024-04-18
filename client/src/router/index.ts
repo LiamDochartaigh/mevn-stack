@@ -4,6 +4,7 @@ import ProfileView from '../views/ProfileView.vue'
 import Dashboard from '../views/Dashboard.vue'
 import NotFound from '../views/404.vue'
 import { nextTick } from 'vue';
+import UserActivated from '../views/UserActivated.vue';
 
 export function MoveRoute(to: RouteRecordRaw | undefined) {
   if (router.currentRoute.value.name == to?.name) {
@@ -44,6 +45,12 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       title: "Dashboard"
     }
+  },
+  {
+    path: '/activate/:token',
+    name: 'Activate',
+    component: UserActivated,
+    props: true
   }
 ]
 
