@@ -48,8 +48,11 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/activate/:token',
-    name: 'Activate',
+    name: 'activate',
     component: UserActivated,
+    meta: {
+      title: "Account Activation"
+    },
     props: true
   }
 ]

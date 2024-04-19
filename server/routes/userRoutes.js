@@ -11,18 +11,20 @@ const validateRegisterUser = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.log(errors.array());
+      return res.status(400).json({ message: "An error occured. Please Try Again Later." });
     }
     next();
   }
 ];
 
-const validateRefreshToken = [
+const validateUserValidate = [
   check('refresh-token').notEmpty().withMessage('Refresh token is required').isString().withMessage('Refresh token must be a string'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.log(errors.array());
+      return res.status(400).json({ message: "An error occured. Please Try Again Later." });
     }
     next();
   }
@@ -33,15 +35,16 @@ const validateConfirmationToken = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.log(errors.array());
+      return res.status(400).json({ message: "An error occured. Please Try Again Later." });
     }
     next();
   }
 ];
 
 router.post("/register", validateRegisterUser, user.registerUser);
-router.get("/refresh", validateRefreshToken, user.refreshUser);
-router.get("/confirm-token", validateConfirmationToken, user.confirmEmail);
+router.get("/validate", validateUserValidate, user.validateUser);
 router.get("/logout", passport.authenticate('jwt', { session: false }), user.logOut);
+router.get("/activate/:token", validateConfirmationToken, user.activateAccount);
 
 module.exports = router;

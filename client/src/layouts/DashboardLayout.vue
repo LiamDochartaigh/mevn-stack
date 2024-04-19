@@ -16,7 +16,7 @@
         </v-list>
       </v-navigation-drawer>
       <v-main>
-        <notificationList :notificationsList="globalStore.notifications"></notificationList>
+        <notificationList :notificationsList="uiStore.notifications"></notificationList>
         <div class="pl-16 pr-16 pb-6 pt-6">
           <slot></slot>
         </div>
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import store from "../store";
+import {useUIStore} from "../store";
 import router from "../router";
 import { RouteIdentifier, MoveRoute } from "../router";
 import AppContainerLayout from "./AppContainerLayout.vue";
@@ -35,7 +35,7 @@ import { getCurrentInstance } from "vue";
 import notificationList from "../components/NotificationList.vue";
 
 const selectMenuItem = ref();
-const globalStore = store();
+const uiStore = useUIStore();
 
 const breakpoint = computed(() => {
   return getCurrentInstance()?.proxy?.$vuetify?.display.smAndDown;

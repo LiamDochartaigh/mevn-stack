@@ -4,7 +4,8 @@ import { Hexeum_Notification} from "../services/notificationService";
 export interface State{
     notifications: Hexeum_Notification[]
 }
-const store = defineStore({
+
+export const useUIStore = defineStore({
     id: 'store',
     state:(): State => ({
         notifications: []
@@ -27,4 +28,20 @@ const store = defineStore({
     }
 });
 
-export default store;
+export const useAuthStore = defineStore({
+    id: 'userAuth',
+    state: () => ({
+        isAuthenticated: false,
+    }),
+    getters: {
+        isLoggedIn: (state) => state.isAuthenticated,
+    },
+    actions: {
+        async logOut(){
+            this.isAuthenticated = false;
+        },
+        async logIn(){
+            this.isAuthenticated = true;
+        }
+    }
+});

@@ -111,16 +111,17 @@
 </template>
   
 <script setup lang="ts">
-import { Ref, ref } from "vue";
-import authenticationService from "../services/userService";
-import { MoveRoute } from "../router";
-import { RouteIdentifier } from "../router";
+import { Ref, ref, computed} from "vue";
+import { MoveRoute, RouteIdentifier } from "../router";
 import logo from "../assets/Logo.png";
 import { VForm } from "vuetify/components";
+import userService from "../services/userService";
+import { useAuthStore } from "../store";
 
 const loginDialog = ref(false);
 const signUpDialog = ref(false);
-const isLoggedIn = ref(false);
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 
 const signupValid = ref(false);
 const signUpEmail = ref('');
@@ -135,7 +136,7 @@ const showLoginPassword = ref(false);
 const loginForm: Ref<InstanceType<typeof VForm> | null> = ref(null);
 
 const logOutAction = async function () {
-  const loggedOut = await authenticationService.logOutUser();
+  const loggedOut = await userService.logOutUser();
   if (loggedOut) {
     MoveRoute(RouteIdentifier.Home);
   }
@@ -154,7 +155,7 @@ const passwordRules = [
 const signUpSubmit = async () => {
   const isValid = await signUpForm.value?.validate();
   if (isValid?.valid) {
-    //Send to API
+    userService.registerUser(signUpEmail.value, signUpPassword.value);
   }
 };
 

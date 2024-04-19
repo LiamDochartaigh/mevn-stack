@@ -10,10 +10,10 @@ function defaultCookie(age) {
     }
 }
 
-const confirmEmail = async (req, res, next) => {
+const activateAccount = async (req, res, next) => {
     try {
-        const token = req.query.token;
-        await userService.ConfirmEmail(token);
+        const token = req.params.token;
+        await userService.ActivateAccount(token);
         res.status(200).json({ message: "Email confirmed." });
     }
     catch (e) {
@@ -36,12 +36,16 @@ const registerUser = async (req, res, next) => {
     }
 }
 
-const refreshUser = async (req, res, next) => {
+const validateUser = async (req, res, next) => {
     try {
+        const accessToken = req.cookies["access-token"];
         const refreshToken = req.cookies["refresh-token"];
-        const responseData = await userService.RefreshUser(refreshToken);
-        res.cookie("access-token", responseData.access_token, defaultCookie(15 * 60 * 1000));
-        res.cookie("refresh-token", responseData.refresh_token, defaultCookie(7 * 24 * 60 * 60 * 1000));
+        let user = await userService.ValidateUser(accessToken);
+        if(!user) {
+            user = await userService.RefreshUser(refreshToken);
+            res.cookie("access-token", user.access_token, defaultCookie(15 * 60 * 1000));
+            res.cookie("refresh-token", user.refresh_token, defaultCookie(7 * 24 * 60 * 60 * 1000));
+        }
         res.sendStatus(200);
     }
     catch (e) {
@@ -66,7 +70,7 @@ const logOut = async (req, res, next) => {
 
 module.exports = {
     registerUser,
-    refreshUser,
+    validateUser,
     logOut,
-    confirmEmail
+    activateAccount
 }

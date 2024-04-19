@@ -7,33 +7,38 @@ async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
   user = await User.create({ email, password });
-  
-  const confirmationToken = crypto.randomBytes(20).toString('hex'); 
+
+  const confirmationToken = crypto.randomBytes(20).toString('hex');
   user.confirmation_token = confirmationToken;
   user.confirmation_token_expires = Date.now() + 3600000;
   await user.save();
-  
+
   await sendConfirmationEmail(
-  user.email,
-  "Please Verify Your Hexeum Account",
-  `${process.env.CLIENT_URL}/activate/${confirmationToken}`);
+    user.email,
+    "Please Verify Your Hexeum Account",
+    `${process.env.CLIENT_URL}/activate/${confirmationToken}`);
 
   await AuthenticateUser(user);
   return user;
 }
 
-async function ConfirmEmail(token) {
+async function ActivateAccount(token) {
   const user = await User.findOne({ confirmation_token: token, confirmation_token_expires: { $gt: Date.now() } });
-  if (!user) { throw new Error('Invalid token or token expired')}
+  if (!user) { throw new Error('Invalid token or token expired') }
   user.email_confirmed = true;
   user.confirmation_token = undefined;
   user.confirmation_token_expires = undefined;
   await user.save();
 }
 
+async function ValidateUser(accessToken, refreshToken) {
+  let user = await User.findOne({ access_token: accessToken });
+  if (user) { return user; }
+}
+
 async function RefreshUser(refreshToken) {
-  const user = await GetUserFromRefreshToken(refreshToken);
-  if (!user) { throw new Error('Invalid refresh token') }
+  const user = await User.findOne({ refresh_token: refreshToken });
+  if (!user) { throw new Error('Invalid Access or Refresh token'); }
   return await AuthenticateUser(user);
 }
 
@@ -47,11 +52,6 @@ async function AuthenticateUser(user) {
 
 async function GetUserByEmail(email) {
   const user = await User.findOne({ email: email });
-  return user;
-}
-
-async function GetUserFromRefreshToken(token) {
-  const user = await User.findOne({ refresh_token: token });
   return user;
 }
 
@@ -95,4 +95,4 @@ async function SetUsersAccessToken(user, token) {
   await user.save();
 }
 
-module.exports = { RegisterUser, LogOutUser, RefreshUser, ConfirmEmail };
+module.exports = { RegisterUser, LogOutUser, ActivateAccount, ValidateUser, RefreshUser };

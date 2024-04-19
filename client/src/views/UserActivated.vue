@@ -2,13 +2,14 @@
     <DefaultLayout>
         <v-row v-if="!isLoading" class="text-center">
             <v-col cols="12"></v-col>
-            <v-col class="mb-4 mt-15">
-                <h1 class="text-h3 font-weight-bold mb-3">Thank You For Activating Your Account</h1>
-                <router-link :to="RouteIdentifier.Home.path">
-                    <v-btn class="hvr-shrink pl-5 pr-5 bg-primary" size="x-large" rounded>
-                        Go Home
-                    </v-btn>
-                </router-link>
+            <v-col v-if="accountActivated" class="mb-4 mt-15">
+                <h1 class="text-h3 font-weight-bold mb-3">Account Activated</h1>
+                <p>Your account has been activated. You can now login to your account.</p>
+            </v-col>
+            <v-col v-else class="mb-4 mt-15">
+                <h1 class="text-h3 font-weight-bold mb-3">Whoops!</h1>
+                <p>Either the provided activation token is invalid or this account has already been activated.</p>
+                <p>Login to your account and please contact Support if you experience any issues accessing your account.</p>
             </v-col>
         </v-row>
     </DefaultLayout>
@@ -17,24 +18,23 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
-import { RouteIdentifier } from '../router';
 import userService from "../services/userService";
 
 const isLoading = ref(true);
+const accountActivated = ref(false);
+
 const props = defineProps({
     token: String
 })
 
-onMounted(async() => {
-    console.log(props.token);
+onMounted(async () => {
+    isLoading.value = true;
     const response = await userService.activateUser(props.token || '');
-    if(response) {
-        console.log('User activated');
+    isLoading.value = false;
+    if (response) {
+        accountActivated.value = true;
     } else {
-        console.log('User already activated or token expired');
+        accountActivated.value = false;
     }
-    //Add loading spinner whilst waiting for response
-    //Handle user activation and when user is already activated or token expired
 })
-
 </script>
