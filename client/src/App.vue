@@ -1,8 +1,15 @@
 <template>
+  <LoadingScreen v-if="isLoading"></LoadingScreen>
   <router-view></router-view>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useUIStore } from './store';
+import LoadingScreen from './components/LoadingScreen.vue';
+
+const uiStore = useUIStore();
+const isLoading = computed(() => uiStore.isLoading);
 </script>
 
 <style>

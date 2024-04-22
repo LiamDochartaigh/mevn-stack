@@ -33,6 +33,14 @@ const UserSchema = new Schema({
   refresh_token: {
     type: String,
     default: ""
+  },
+  password_reset_token: {
+    type: String,
+    default: ""
+  },
+  password_reset_expires: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 

@@ -1,16 +1,9 @@
 import { baseAXios } from './axiosService';
-import { useAuthStore } from '../store';
+import { useAuthStore, useUIStore } from '../store';
 
 baseAXios.interceptors.response.use(function (response) {
   return response;
 }, async function (error) {
-
-  if (error.response && error.response.status === 401) {
-    const refreshed = await validateUser();
-    if (refreshed) {
-      return baseAXios.request(error.config);
-    }
-  }
   return Promise.reject(error);
 });
 
@@ -26,7 +19,23 @@ async function registerUser(email: string, password: string) {
     }
   }
   catch (e: any) {
-    console.log(e.message);
+    console.error(e.message);
+  }
+}
+
+async function loginUser(email: string, password: string) {
+  try {
+    const response = await baseAXios.post(`/login`, {
+      email: email,
+      password: password
+    });
+    if (response && response.status == 200) {
+      useAuthStore().logIn();
+      return response;
+    }
+  }
+  catch (e: any) {
+    console.error(e.message);
   }
 }
 
@@ -40,21 +49,24 @@ async function logOutUser() {
     else return false;
   }
   catch (e: any) {
-    console.log(e.message);
+    console.error(e.message);
   }
 }
 
 async function validateUser() {
-  try{
+  try {
+    useUIStore().showLoading();
     const response = await baseAXios.get(`/validate`);
-    if(response && response.status == 200){
+    useUIStore().hideLoading();
+    if (response && response.status == 200) {
       useAuthStore().logIn();
       return true;
     }
     else return false;
   }
-  catch(e: any){
-    console.log(e.message);
+  catch (e: any) {
+    console.error(e.message);
+    useUIStore().hideLoading();
   }
 }
 
@@ -66,8 +78,8 @@ async function activateUser(token: string) {
     }
   }
   catch (e: any) {
-    console.log(e.message);
+    console.error(e.message);
   }
 }
 
-export default { registerUser, logOutUser, activateUser, validateUser }
+export default { registerUser, logOutUser, activateUser, validateUser, loginUser}

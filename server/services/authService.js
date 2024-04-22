@@ -22,4 +22,13 @@ function VerifyToken(token) {
     return verify(token, secret);
 }
 
-module.exports = { GenerateJWT, GenerateRefreshToken, VerifyToken }
+function GenerateEmailResetToken() {
+    return randomBytes(20).toString('hex');
+}
+
+module.exports = {
+    GenerateJWT,
+    GenerateRefreshToken,
+    VerifyToken,
+    GenerateEmailResetToken
+}

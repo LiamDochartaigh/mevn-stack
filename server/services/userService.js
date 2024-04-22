@@ -1,6 +1,6 @@
 const { User } = require("../models/userModel");
-const { GenerateJWT, GenerateRefreshToken } = require("./authService");
-const { sendConfirmationEmail } = require("./emailService");
+const { GenerateJWT, GenerateRefreshToken, GenerateEmailResetToken} = require("./authService");
+const { sendConfirmationEmail, sendPasswordResetEmail} = require("./emailService");
 const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
@@ -16,7 +16,7 @@ async function RegisterUser(email, password) {
   await sendConfirmationEmail(
     user.email,
     "Please Verify Your Hexeum Account",
-    `${process.env.CLIENT_URL}/activate/${confirmationToken}`);
+    confirmationToken);
 
   await AuthenticateUser(user);
   return user;
@@ -39,7 +39,8 @@ async function ValidateUser(accessToken, refreshToken) {
 async function RefreshUser(refreshToken) {
   const user = await User.findOne({ refresh_token: refreshToken });
   if (!user) { throw new Error('Invalid Access or Refresh token'); }
-  return await AuthenticateUser(user);
+  await AuthenticateUser(user);
+  return user;
 }
 
 async function AuthenticateUser(user) {
@@ -50,8 +51,11 @@ async function AuthenticateUser(user) {
   await SetUsersAccessToken(user, jwt);
 }
 
-async function GetUserByEmail(email) {
-  const user = await User.findOne({ email: email });
+async function LogInUser(email, password) {
+  const user = await GetUserByEmail(email);
+  if (!user) { throw new Error("User not found"); }
+  if (user.password !== password) { throw new Error("Invalid password"); }
+  await AuthenticateUser(user);
   return user;
 }
 
@@ -61,6 +65,11 @@ async function LogOutUser(user) {
   }
   await DeleteUsersAccessToken(user);
   await DeleteUsersRefreshToken(user);
+}
+
+async function GetUserByEmail(email) {
+  const user = await User.findOne({ email: email });
+  return user;
 }
 
 async function SetUsersRefreshToken(user, token) {
@@ -95,4 +104,24 @@ async function SetUsersAccessToken(user, token) {
   await user.save();
 }
 
-module.exports = { RegisterUser, LogOutUser, ActivateAccount, ValidateUser, RefreshUser };
+async function ResetUserPasswordRequest(email) {
+  const user = await GetUserByEmail(email);
+  if (!user || !user._id || !user.save) {
+    throw new Error("User not found");
+  }
+  const resetToken = GenerateEmailResetToken();
+  user.password_reset_token = resetToken;
+  user.password_reset_expires = Date.now() + 1200000;
+  await sendPasswordResetEmail(user.email, "Password Reset Request", resetToken);
+  await user.save();
+}
+
+module.exports = { 
+  RegisterUser,
+  LogOutUser,
+  ActivateAccount,
+  ValidateUser,
+  RefreshUser,
+  LogInUser,
+  ResetUserPasswordRequest
+};
