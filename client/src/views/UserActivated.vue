@@ -1,8 +1,8 @@
 <template>
     <DefaultLayout>
-        <v-row v-if="!isLoading" class="text-center">
+        <v-row v-if="!isLoading" class="text-center justify-center">
             <v-col cols="12"></v-col>
-            <v-col v-if="accountActivated" class="mb-4 mt-15">
+            <v-col cols="8" v-if="accountActivated" class="mb-4 mt-15">
                 <h1 class="text-h3 font-weight-bold mb-3">Account Activated</h1>
                 <p>Your account has been activated. You can now login to your account.</p>
             </v-col>

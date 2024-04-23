@@ -82,4 +82,19 @@ async function activateUser(token: string) {
   }
 }
 
-export default { registerUser, logOutUser, activateUser, validateUser, loginUser}
+async function validatePasswordResetToken(token: string) {
+  try {
+    const response = await baseAXios.post(`/password-reset/validate/`, {
+      token: token
+    });
+    if (response && response.status == 200) {
+      return response;
+    }
+  }
+  catch (e: any) {
+    console.error(e.message);
+  }
+
+}
+
+export default { registerUser, logOutUser, activateUser, validateUser, loginUser, validatePasswordResetToken }

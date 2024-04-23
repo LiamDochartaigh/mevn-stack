@@ -116,6 +116,12 @@ async function ResetUserPasswordRequest(email) {
   await user.save();
 }
 
+async function ValidatePasswordResetToken(token) {
+  const user = await User.findOne({ password_reset_token: token, password_reset_expires: { $gt: Date.now() } });
+  if (!user) { throw new Error('Invalid token or token expired'); }
+  return user;
+}
+
 module.exports = { 
   RegisterUser,
   LogOutUser,
@@ -123,5 +129,6 @@ module.exports = {
   ValidateUser,
   RefreshUser,
   LogInUser,
-  ResetUserPasswordRequest
+  ResetUserPasswordRequest,
+  ValidatePasswordResetToken
 };

@@ -25,7 +25,9 @@
                 <v-row>
                   <v-col cols="12">
                     <v-alert v-if="registerError" type="error" dense dismissible @input="registerError = false">
-                      This email address is already registered. If this is your email address, please log in or reset your password.
+                      This email address is already registered. If this is your email address, please log in or reset
+                      your
+                      password.
                     </v-alert>
                   </v-col>
                 </v-row>
@@ -114,7 +116,10 @@
         </v-menu>
       </template>
     </v-app-bar>
-    <slot></slot>
+
+    <v-container>
+      <slot></slot>
+    </v-container>
     <v-footer padless app>
       <v-row justify="center" no-gutters>
         <v-col class="py-2 text-center" cols="12">
@@ -173,7 +178,7 @@ const signUpSubmit = async () => {
   const isValid = await signUpForm.value?.validate();
   if (isValid?.valid) {
     const response = await userService.registerUser(signUpEmail.value, signUpPassword.value);
-    if(!response) { registerError.value = true; }
+    if (!response) { registerError.value = true; }
   }
 };
 

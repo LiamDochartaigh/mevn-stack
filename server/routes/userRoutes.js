@@ -68,12 +68,12 @@ const validatePasswordResetRequest = [
 ];
 
 const validatePasswordReset = [
-  check('email').notEmpty().withMessage('Email is required').isEmail().withMessage('Email must be a valid email address'),
+  check('token').notEmpty().withMessage('Token is required'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      return res.status(400).json({ message: "An error occured. Please Try Again Later." });
+      return res.status(403).json({ message: "An error occured. Please Try Again Later." });
     }
     next();
   }
@@ -85,5 +85,6 @@ router.get("/validate", validateUserValidate, user.validateUser);
 router.get("/logout", passport.authenticate('jwt', { session: false }), user.logOut);
 router.get("/activate/:token", validateConfirmationToken, user.activateAccount);
 router.post("/password-reset", validatePasswordResetRequest, user.resetUserPasswordRequest);
+router.post("/password-reset/validate", validatePasswordReset, user.validatePasswordResetToken);
 
 module.exports = router;

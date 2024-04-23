@@ -29,7 +29,7 @@ async function sendPasswordResetEmail(to, subject, resetToken) {
       subject: subject,
       template: "password_reset_template",
       'h:X-Mailgun-Variables': JSON.stringify(
-        { password_reset_link: `${process.env.CLIENT_URL}recovery/${resetToken}`,
+        { password_reset_link: `${process.env.CLIENT_URL}recovery/?token=${resetToken}`,
         organization_name: 'Hexeum'}
 
       )
