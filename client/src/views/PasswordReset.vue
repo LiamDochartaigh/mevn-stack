@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <v-row v-if="!isLoading" class="text-center justify-center">
+        <v-row class="text-center justify-center">
             <v-col cols="12"></v-col>
             <v-col cols="8" class="mb-4 mt-15">
                 <v-card>
@@ -33,6 +33,7 @@
                             </v-btn>
                         </v-card-actions>
                     </v-form>
+                    <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
                 </v-card>
             </v-col>
         </v-row>
@@ -45,13 +46,14 @@ import DefaultLayout from "../layouts/DefaultLayout.vue";
 import { VForm } from "vuetify/components";
 import router from "../router";
 import userService from "../services/userService";
+import LoadingScreen from "../components/LoadingScreen.vue";
 
-const isLoading = ref(true);
 const requestSent = ref(false);
 
 const passwordResetValid = ref(false);
 const error = ref(false);
 const success = ref(false);
+const sendingRequest = ref(false);
 
 const accountEmail = ref('');
 const passwordResetForm: Ref<InstanceType<typeof VForm> | null> = ref(null);
@@ -65,18 +67,18 @@ const passwordResetSubmit = async () => {
     const isValid = await passwordResetForm.value?.validate();
     if (isValid?.valid) {
         requestSent.value = true;
+        sendingRequest.value = true;
         await userService.resetPasswordRequest(accountEmail.value);
+        sendingRequest.value = false;
         error.value = false;
         success.value = true;
     }
 };
 
 onMounted(async () => {
-    isLoading.value = true;
     if (router.currentRoute.value.query.error) {
         error.value = true;
         success.value = false;
     }
-    isLoading.value = false;
 })
 </script>

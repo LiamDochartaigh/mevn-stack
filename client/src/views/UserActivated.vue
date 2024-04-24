@@ -19,17 +19,15 @@
 import { onMounted, ref } from "vue";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
 import userService from "../services/userService";
+import router from "../router";
 
 const isLoading = ref(true);
 const accountActivated = ref(false);
 
-const props = defineProps({
-    token: String
-})
-
 onMounted(async () => {
     isLoading.value = true;
-    const response = await userService.activateUser(props.token || '');
+    const token = router.currentRoute.value.query.token?.toString() || '';
+    const response = await userService.activateUser(token);
     isLoading.value = false;
     if (response) {
         accountActivated.value = true;

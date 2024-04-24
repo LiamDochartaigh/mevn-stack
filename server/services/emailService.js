@@ -11,7 +11,7 @@ async function sendConfirmationEmail(to, subject, confirmationToken) {
       subject: subject,
       template: "confirmation_template",
       'h:X-Mailgun-Variables': JSON.stringify(
-        { account_confirmation_link: `${process.env.CLIENT_URL}activate/${confirmationToken}`,
+        { account_confirmation_link: `${process.env.CLIENT_URL}activate/?token=${confirmationToken}`,
         organization_name: 'Hexeum'}
       )
     });

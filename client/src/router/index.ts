@@ -50,7 +50,7 @@ export const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/activate/:token',
+    path: '/activate',
     name: 'activate',
     component: UserActivated,
     meta: {

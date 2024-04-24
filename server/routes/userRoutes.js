@@ -96,7 +96,7 @@ router.post("/login", validateUserLogIn, user.logIn);
 router.post("/register", validateRegisterUser, user.registerUser);
 router.get("/validate", validateUserValidate, user.validateUser);
 router.get("/logout", passport.authenticate('jwt', { session: false }), user.logOut);
-router.get("/activate/:token", validateConfirmationToken, user.activateAccount);
+router.post("/activate/", validateConfirmationToken, user.activateAccount);
 router.post("/password-reset", validatePasswordResetRequest, user.resetUserPasswordRequest);
 router.post("/password-reset/validate", validatePasswordReset, user.validatePasswordResetToken);
 router.post("/password-reset/change", validatePasswordChange, user.changePassword);

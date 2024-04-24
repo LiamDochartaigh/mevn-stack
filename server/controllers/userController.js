@@ -12,7 +12,7 @@ function defaultCookie(age) {
 
 const activateAccount = async (req, res, next) => {
     try {
-        const token = req.params.token;
+        const token = req.body.token;
         await userService.ActivateAccount(token);
         res.status(200).json({ message: "Email confirmed." });
     }

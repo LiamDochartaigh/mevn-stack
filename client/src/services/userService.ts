@@ -66,7 +66,9 @@ async function validateUser() {
 
 async function activateUser(token: string) {
   try {
-    const response = await baseAXios.get(`/activate/${token}`);
+    const response = await baseAXios.post(`/activate/`, {
+      token: token
+    });
     if (response && response.status == 200) {
       return response;
     }
