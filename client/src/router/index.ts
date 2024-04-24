@@ -7,6 +7,7 @@ import { nextTick } from 'vue';
 import UserActivated from '../views/UserActivated.vue';
 import ChangePassword from '../views/ChangePassword.vue';
 import PasswordReset from '../views/PasswordReset.vue'
+import Login from '../views/Login.vue';
 
 export function MoveRoute(to: RouteRecordRaw | undefined) {
   if (router.currentRoute.value.name == to?.name) {
@@ -74,6 +75,14 @@ export const routes: Array<RouteRecordRaw> = [
       title: "Reset Password"
     },
     props: true
+  },
+  {
+    path: '/login',
+    name: "login",
+    component: Login,
+    meta: {
+      title: "Login"
+    }
   }
 ]
 

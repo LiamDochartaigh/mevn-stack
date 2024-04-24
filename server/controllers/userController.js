@@ -107,6 +107,19 @@ const validatePasswordResetToken = async (req, res, next) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const token = req.body.token;
+        const password = req.body.password;
+        await userService.ChangePassword(token, password);
+        res.sendStatus(200);
+    }
+    catch (e) {
+        console.error("Error changing password:", e.message);
+        res.status(403).json({ message: "An error occured. Please Try Again Later." });
+    }
+}
+
 module.exports = {
     registerUser,
     validateUser,
@@ -114,5 +127,6 @@ module.exports = {
     logIn,
     activateAccount,
     resetUserPasswordRequest,
-    validatePasswordResetToken
+    validatePasswordResetToken,
+    changePassword
 }

@@ -15,17 +15,20 @@
                                     <v-alert v-if="error" type="error" dense dismissible>
                                         Password reset link is invalid or has expired.
                                     </v-alert>
+                                    <v-alert v-if="success" type="success" dense dismissible>
+                                        We've sent you an email to make sure it's really you. Please check your inbox and click the confirmation link.
+                                    </v-alert>
                                 </v-col>
                             </v-row>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-text-field v-model="accountEmail" :rules="emailRules" autocomplete="email"
+                                    <v-text-field v-model="accountEmail" :disabled="requestSent" :rules="emailRules" autocomplete="email"
                                         label="Email" outlined required></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-card-text>
                         <v-card-actions class="justify-center">
-                            <v-btn class="hvr-shrink pl-5 pr-5 bg-primary" size="x-large" rounded type="submit">
+                            <v-btn v-if="!requestSent" class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded type="submit">
                                 Reset Password
                             </v-btn>
                         </v-card-actions>
@@ -41,13 +44,14 @@ import { onMounted, ref, Ref } from "vue";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
 import { VForm } from "vuetify/components";
 import router from "../router";
-import { userInfo } from "os";
 import userService from "../services/userService";
 
 const isLoading = ref(true);
+const requestSent = ref(false);
 
 const passwordResetValid = ref(false);
 const error = ref(false);
+const success = ref(false);
 
 const accountEmail = ref('');
 const passwordResetForm: Ref<InstanceType<typeof VForm> | null> = ref(null);
@@ -60,9 +64,10 @@ const emailRules = [
 const passwordResetSubmit = async () => {
     const isValid = await passwordResetForm.value?.validate();
     if (isValid?.valid) {
-        //const response = await userService.loginUser(accountEmail.value, newPassword.value);
-        //if (!response) { passwordResetError.value = true; }
-        //If there is no valid token, show the error message and ask for email again with a reset password button?
+        requestSent.value = true;
+        await userService.resetPasswordRequest(accountEmail.value);
+        error.value = false;
+        success.value = true;
     }
 };
 
@@ -70,11 +75,8 @@ onMounted(async () => {
     isLoading.value = true;
     if (router.currentRoute.value.query.error) {
         error.value = true;
-        //const response = await userService.validatePasswordResetToken(router.currentRoute.value.query.token);
-        //if (!response) { error.value = true; }
+        success.value = false;
     }
-    //Validate the token here, get from the props
-    //const response = await userService.activateUser(props.token || '');
     isLoading.value = false;
 })
 </script>

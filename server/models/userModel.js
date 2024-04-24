@@ -24,7 +24,7 @@ const UserSchema = new Schema({
   },
   confirmation_token_expires: {
     type: Date,
-    default: Date.now
+    default: ''
   },
   access_token: {
     type: String,
@@ -40,7 +40,7 @@ const UserSchema = new Schema({
   },
   password_reset_expires: {
     type: Date,
-    default: Date.now
+    default: ''
   }
 }, { timestamps: true });
 

@@ -1,6 +1,6 @@
 const { User } = require("../models/userModel");
-const { GenerateJWT, GenerateRefreshToken, GenerateEmailResetToken} = require("./authService");
-const { sendConfirmationEmail, sendPasswordResetEmail} = require("./emailService");
+const { GenerateJWT, GenerateRefreshToken, GenerateEmailResetToken } = require("./authService");
+const { sendConfirmationEmail, sendPasswordResetEmail } = require("./emailService");
 const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
@@ -26,12 +26,12 @@ async function ActivateAccount(token) {
   const user = await User.findOne({ confirmation_token: token, confirmation_token_expires: { $gt: Date.now() } });
   if (!user) { throw new Error('Invalid token or token expired') }
   user.email_confirmed = true;
-  user.confirmation_token = undefined;
-  user.confirmation_token_expires = undefined;
+  user.confirmation_token = '';
+  user.confirmation_token_expires = '';
   await user.save();
 }
 
-async function ValidateUser(accessToken, refreshToken) {
+async function ValidateUser(accessToken) {
   let user = await User.findOne({ access_token: accessToken });
   if (user) { return user; }
 }
@@ -122,7 +122,16 @@ async function ValidatePasswordResetToken(token) {
   return user;
 }
 
-module.exports = { 
+async function ChangePassword(token, password) {
+  const user = await User.findOne({ password_reset_token: token, password_reset_expires: { $gt: Date.now() } });
+  if (!user) { throw new Error('Invalid token or token expired'); }
+  user.password = password;
+  user.password_reset_token = "";
+  user.password_reset_expires = "";
+  await user.save();
+}
+
+module.exports = {
   RegisterUser,
   LogOutUser,
   ActivateAccount,
@@ -130,5 +139,6 @@ module.exports = {
   RefreshUser,
   LogInUser,
   ResetUserPasswordRequest,
-  ValidatePasswordResetToken
+  ValidatePasswordResetToken,
+  ChangePassword
 };
