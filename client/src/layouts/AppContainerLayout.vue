@@ -1,5 +1,11 @@
 <template>
   <v-app>
+    <NotificationBanner
+    v-if="notificationActive"
+    :icon="notificationIcon"
+    :message="notificationMessage"
+    :actionMessage="notificationActionMessage"
+    :action="notificationAction" />
     <v-app-bar clipped-left app class="pl-3">
       <slot name="prepend"></slot>
       <router-link :to="RouteIdentifier.Home.path">
@@ -49,10 +55,10 @@
       </template>
     </v-app-bar>
 
-    <v-container>
+    <v-main class="main">
       <slot></slot>
-    </v-container>
-    <v-footer padless app>
+    </v-main>
+    <v-footer>
       <v-row justify="center" no-gutters>
         <v-col class="py-2 text-center" cols="12">
           {{ new Date().getFullYear() }} — Company Name
@@ -70,11 +76,19 @@ import userService from "../services/userService";
 import { useAuthStore } from "../store";
 import LoginForm from "../components/LoginForm.vue";
 import RegisterForm from "../components/RegisterForm.vue";
+import NotificationBanner from "../components/NotificationBanner.vue";
 
 const loginDialog = ref(false);
 const signUpDialog = ref(false);
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
+
+//Notification Banner
+const notificationActive = ref(false);
+const notificationMessage = ref("");
+const notificationActionMessage = ref("");
+const notificationAction = ref(() => {});
+const notificationIcon = ref("");
 
 const logOutAction = async function () {
   const loggedOut = await userService.logOutUser();
@@ -93,5 +107,9 @@ const menuDropdown = [
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+}
+
+.main {
+  min-height: 100vh;
 }
 </style>

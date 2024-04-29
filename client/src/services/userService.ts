@@ -1,6 +1,12 @@
 import { baseAXios } from './axiosService';
 import { useAuthStore, useUIStore } from '../store';
 
+interface User {
+  email: string,
+  avatar: string,
+  email_Confirmed: boolean,
+}
+
 async function registerUser(email: string, password: string) {
   try {
     const response = await baseAXios.post(`/register`, {
