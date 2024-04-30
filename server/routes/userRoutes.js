@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
 const { user } = require('../controllers');
-const passport = require('../middleware/passport');
+const {authenticate} = require('../middleware/auth');
 
 const router = Router();
 
@@ -26,18 +26,6 @@ const validateUserLogIn = [
     if (!errors.isEmpty()) {
       console.log(errors.array());
       return res.status(400).json({ message: "An error occured. Please Try Again Later." });
-    }
-    next();
-  }
-];
-
-const validateUserValidate = [
-  check('refresh-token').notEmpty().withMessage('Refresh token is required').isString().withMessage('Refresh token must be a string'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors.array());
-      return res.status(401).json({ message: "User Could Not Be Authenticated." });
     }
     next();
   }
@@ -94,11 +82,15 @@ const validatePasswordChange = [
 
 router.post("/login", validateUserLogIn, user.logIn);
 router.post("/register", validateRegisterUser, user.registerUser);
-router.get("/validate", validateUserValidate, user.validateUser);
-router.get("/logout", passport.authenticate('jwt', { session: false }), user.logOut);
+router.get("/validate", authenticate, user.validateUser);
+router.get("/logout", authenticate, user.logOut);
 router.post("/activate/", validateConfirmationToken, user.activateAccount);
 router.post("/password-reset", validatePasswordResetRequest, user.resetUserPasswordRequest);
 router.post("/password-reset/validate", validatePasswordReset, user.validatePasswordResetToken);
 router.post("/password-reset/change", validatePasswordChange, user.changePassword);
+router.get("/resend-confirmation", authenticate, user.sendConfirmationEmail);
+
+//Get rid of after testing
+router.get("/user", authenticate, user.getUser);
 
 module.exports = router;

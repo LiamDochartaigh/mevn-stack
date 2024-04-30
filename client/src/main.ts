@@ -4,6 +4,7 @@ import { createPinia } from 'pinia'
 import router from './router'
 import vuetify from './plugins/vuetify';
 import userService from './services/userService';
+import 'reflect-metadata';
 
 const pinia = createPinia();
 

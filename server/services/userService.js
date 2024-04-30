@@ -7,19 +7,22 @@ async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
   user = await User.create({ email, password });
+  SendEmailConfirmation(user);
+  await AuthenticateUser(user);
+  return user;
+}
 
+async function SendEmailConfirmation(user) {
+  if(!user){throw new Error("Invalid User")}
+  if(user.email_confirmed){ throw new Error("Email already confirmed"); }
   const confirmationToken = crypto.randomBytes(20).toString('hex');
   user.confirmation_token = confirmationToken;
   user.confirmation_token_expires = Date.now() + 3600000;
   await user.save();
-
   await sendConfirmationEmail(
     user.email,
     "Please Verify Your Hexeum Account",
     confirmationToken);
-
-  await AuthenticateUser(user);
-  return user;
 }
 
 async function ActivateAccount(token) {
@@ -140,5 +143,7 @@ module.exports = {
   LogInUser,
   ResetUserPasswordRequest,
   ValidatePasswordResetToken,
-  ChangePassword
+  ChangePassword,
+  GetUserByEmail,
+  SendEmailConfirmation
 };

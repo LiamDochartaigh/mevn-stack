@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <NotificationBanner
-    v-if="notificationActive"
-    :icon="notificationIcon"
-    :message="notificationMessage"
-    :actionMessage="notificationActionMessage"
-    :action="notificationAction" />
+    <NotificationBanner v-if="user?.email_confirmed === false" icon="mdi-alert-circle"
+      :message="`Please activate your account to access all features. We've sent an activation email to ${user.email}.`"
+      actionMessage="Resend Activation"
+      actionFinishedMessage="Email Sent"
+      :action="notificationAction" />
+
     <v-app-bar clipped-left app class="pl-3">
       <slot name="prepend"></slot>
       <router-link :to="RouteIdentifier.Home.path">
@@ -82,19 +82,17 @@ const loginDialog = ref(false);
 const signUpDialog = ref(false);
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
-
-//Notification Banner
-const notificationActive = ref(false);
-const notificationMessage = ref("");
-const notificationActionMessage = ref("");
-const notificationAction = ref(() => {});
-const notificationIcon = ref("");
+const user = computed(() =>  authStore.user);
 
 const logOutAction = async function () {
   const loggedOut = await userService.logOutUser();
   if (loggedOut) {
     MoveRoute(RouteIdentifier.Home);
   }
+};
+
+const notificationAction = async function () {
+  await userService.sendActivationEmail();
 };
 
 const menuDropdown = [

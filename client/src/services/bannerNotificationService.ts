@@ -18,4 +18,3 @@ export class Banner_Notification implements IBanner_Notification{
         this.notificationIcon = notificationIcon;
     }
 }
-

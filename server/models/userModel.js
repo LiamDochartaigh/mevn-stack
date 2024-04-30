@@ -14,35 +14,55 @@ const UserSchema = new Schema({
     type: String,
     default: "user"
   },
-  email_confirmed:{
+  email_confirmed: {
     type: Boolean,
     default: false
   },
   confirmation_token: {
     type: String,
-    default: ""
+    default: "",
   },
   confirmation_token_expires: {
     type: Date,
-    default: ''
+    default: '',
   },
   access_token: {
     type: String,
-    default: ""
+    default: "",
   },
   refresh_token: {
     type: String,
-    default: ""
+    default: "",
   },
   password_reset_token: {
     type: String,
-    default: ""
+    default: "",
   },
   password_reset_expires: {
     type: Date,
+    default: '',
+  },
+  user_avatar_URL: {
+    type: String,
     default: ''
   }
 }, { timestamps: true });
+
+UserSchema.set('toJSON', {
+  transform: function(doc, ret) {
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    delete ret.__v;
+    delete ret.password;
+    delete ret.confirmation_token;
+    delete ret.confirmation_token_expires;
+    delete ret.access_token;
+    delete ret.refresh_token;
+    delete ret.password_reset_token;
+    delete ret.password_reset_expires;
+    return ret;
+  }
+});
 
 const User = model("User", UserSchema);
 module.exports = { User };

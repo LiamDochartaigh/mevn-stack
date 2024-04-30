@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue/dist/vue.js';
 
 defineProps({
     contained: {

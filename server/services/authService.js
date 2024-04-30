@@ -1,6 +1,15 @@
 const { sign, verify } = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 
+function DefaultCookie(age) {
+    return {
+        maxAge: age,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+    }
+}
+
 function GenerateJWT(userID) {
     const payload = {
         id: userID
@@ -30,5 +39,6 @@ module.exports = {
     GenerateJWT,
     GenerateRefreshToken,
     VerifyToken,
-    GenerateEmailResetToken
+    GenerateEmailResetToken,
+    DefaultCookie
 }

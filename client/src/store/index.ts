@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Hexeum_Notification } from "../services/notificationService";
+import { User } from '../services/userService';
 
 export interface State {
     notifications: Hexeum_Notification[],
@@ -40,15 +41,19 @@ export const useAuthStore = defineStore({
     id: 'userAuth',
     state: () => ({
         isAuthenticated: false,
+        user: <User | null>null,
     }),
     getters: {
         isLoggedIn: (state) => state.isAuthenticated,
+        getUser: (state) => state.user
     },
     actions: {
         async logOut() {
+            this.user = null;
             this.isAuthenticated = false;
         },
-        async logIn() {
+        async logIn(user: User) {
+            this.user = user;
             this.isAuthenticated = true;
         }
     }

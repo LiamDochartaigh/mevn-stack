@@ -3,21 +3,36 @@
         <v-row class="align-center justify-center">
             <v-icon class="mr-2">{{ icon }}</v-icon>
             <span class="mr-4">{{message}}</span>
-            <v-btn @click="action" class="hvr-shrink bg-primary mr-4" rounded target="_blank">
-                <span>{{ actionMessage }}</span>
+            <v-btn
+            :disabled="buttonDisabled"
+            @click="ExecuteAction"
+            class="hvr-shrink bg-primary mr-4"
+            rounded target="_blank">
+                <span>{{ buttonDisabled === true ? actionFinishedMessage : actionMessage }}</span>
             </v-btn>
         </v-row>
     </v-app-bar>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     icon: String,
     message: String,
     actionMessage: String,
+    actionFinishedMessage: String,
     action: Function
 })
+
+const buttonDisabled = ref(false);
+
+async function ExecuteAction() {
+    if(props.action){
+        buttonDisabled.value = true;
+        await props.action();
+    }
+}
 </script>
 
 <style scoped>
