@@ -117,7 +117,6 @@ const sendConfirmationEmail = async (req, res, next) => {
         console.error("Error sending confirmation email:", e.message);
         res.status(401).json({ message: "An error occured. Please Try Again Later." });
     }
-
 }
 
 const getUser = async (req, res, next) => {

@@ -1,5 +1,5 @@
 import { baseAXios } from './axiosService';
-import { useAuthStore, useUIStore } from '../store';
+import { useUserStore, useUIStore } from '../store';
 import { IsDefined } from 'class-validator';
 import { validateAndTransform } from '../util/dataValidation';
 
@@ -26,7 +26,7 @@ async function registerUser(email: string, password: string) {
     });
     if (response && response.status == 201) {
       const user = await validateAndTransform(User, response.data as User);
-      useAuthStore().logIn(user);
+      useUserStore().logIn(user);
       return response;
     }
   }
@@ -45,7 +45,7 @@ async function loginUser(email: string, password: string) {
 
     if (response && response.status == 200) {
       const user = await validateAndTransform(User, response.data as User);
-      useAuthStore().logIn(user);
+      useUserStore().logIn(user);
       return response;
     }
   }
@@ -58,7 +58,7 @@ async function logOutUser() {
   try {
     const response = await baseAXios.get(`/logout`);
     if (response && response.status == 200) {
-      useAuthStore().logOut();
+      useUserStore().logOut();
       return true;
     }
     else return false;
@@ -75,7 +75,7 @@ async function validateUser() {
     useUIStore().hideLoading();
     if (response && response.status == 200) {
       const user = await validateAndTransform(User, response.data as User);
-      useAuthStore().logIn(user);
+      useUserStore().logIn(user);
       return true;
     }
     else return false;
@@ -92,6 +92,10 @@ async function activateUser(token: string) {
       token: token
     });
     if (response && response.status == 200) {
+      const userStore = useUserStore();
+      if (userStore.user) {
+        userStore.user.email_confirmed = true;
+      }
       return response;
     }
   }

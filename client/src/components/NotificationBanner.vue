@@ -8,7 +8,7 @@
             @click="ExecuteAction"
             class="hvr-shrink bg-primary mr-4"
             rounded target="_blank">
-                <span>{{ buttonDisabled === true ? actionFinishedMessage : actionMessage }}</span>
+                <span>{{ actionComplete === true ? actionFinishedMessage : actionMessage }}</span>
             </v-btn>
         </v-row>
     </v-app-bar>
@@ -26,11 +26,16 @@ const props = defineProps({
 })
 
 const buttonDisabled = ref(false);
+const actionComplete = ref(false);
 
 async function ExecuteAction() {
     if(props.action){
         buttonDisabled.value = true;
-        await props.action();
+        const response = await props.action();
+        if(!response){
+            buttonDisabled.value = false;
+        }
+        else{actionComplete.value = true;}
     }
 }
 </script>

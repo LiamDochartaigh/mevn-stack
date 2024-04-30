@@ -73,14 +73,14 @@ import { ref, computed } from "vue";
 import { MoveRoute, RouteIdentifier } from "../router";
 import logo from "../assets/Logo.png";
 import userService from "../services/userService";
-import { useAuthStore } from "../store";
+import { useUserStore } from "../store";
 import LoginForm from "../components/LoginForm.vue";
 import RegisterForm from "../components/RegisterForm.vue";
 import NotificationBanner from "../components/NotificationBanner.vue";
 
 const loginDialog = ref(false);
 const signUpDialog = ref(false);
-const authStore = useAuthStore();
+const authStore = useUserStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 const user = computed(() =>  authStore.user);
 
@@ -92,7 +92,7 @@ const logOutAction = async function () {
 };
 
 const notificationAction = async function () {
-  await userService.sendActivationEmail();
+  return await userService.sendActivationEmail();
 };
 
 const menuDropdown = [

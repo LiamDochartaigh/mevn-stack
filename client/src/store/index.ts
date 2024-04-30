@@ -37,8 +37,8 @@ export const useUIStore = defineStore({
     }
 });
 
-export const useAuthStore = defineStore({
-    id: 'userAuth',
+export const useUserStore = defineStore({
+    id: 'userStore',
     state: () => ({
         isAuthenticated: false,
         user: <User | null>null,
