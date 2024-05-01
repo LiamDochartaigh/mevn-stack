@@ -21,6 +21,7 @@
     "express-rate-limit": "^6.7.0",
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
+    "google-auth-library": "^9.9.0",
     "jsonwebtoken": "^9.0.2",
     "mailgun.js": "^10.2.1",
     "mongoose": "^6.8.0",

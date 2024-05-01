@@ -2,6 +2,7 @@ import { baseAXios } from './axiosService';
 import { useUserStore, useUIStore } from '../store';
 import { IsDefined } from 'class-validator';
 import { validateAndTransform } from '../util/dataValidation';
+import { authGoogle } from './authService';
 
 export class User {
   @IsDefined()
@@ -20,7 +21,7 @@ export class User {
 
 async function registerUser(email: string, password: string) {
   try {
-    const response = await baseAXios.post(`/register`, {
+    const response = await baseAXios.post(`/user/register`, {
       email: email,
       password: password
     });
@@ -38,7 +39,7 @@ async function registerUser(email: string, password: string) {
 async function loginUser(email: string, password: string) {
   try {
 
-    const response = await baseAXios.post(`/login`, {
+    const response = await baseAXios.post(`/user/login`, {
       email: email,
       password: password
     });
@@ -54,9 +55,23 @@ async function loginUser(email: string, password: string) {
   }
 }
 
+export async function loginGoogleUser(code: string) {
+  try {
+    const response = await authGoogle(code);
+    if (response && response.status == 200) {
+      const user = await validateAndTransform(User, response.data as User);
+      useUserStore().logIn(user);
+      return response;
+    }
+  }
+  catch (e: any) {
+    console.error(e.message);
+  }
+}
+
 async function logOutUser() {
   try {
-    const response = await baseAXios.get(`/logout`);
+    const response = await baseAXios.get(`/user/logout`);
     if (response && response.status == 200) {
       useUserStore().logOut();
       return true;
@@ -71,14 +86,16 @@ async function logOutUser() {
 async function validateUser() {
   try {
     useUIStore().showLoading();
-    const response = await baseAXios.get(`/validate`);
+    const response = await baseAXios.get(`/user/validate`);
     useUIStore().hideLoading();
     if (response && response.status == 200) {
       const user = await validateAndTransform(User, response.data as User);
       useUserStore().logIn(user);
       return true;
     }
-    else return false;
+    else {
+      return false;
+    }
   }
   catch (e: any) {
     console.error(e.message);
@@ -88,7 +105,7 @@ async function validateUser() {
 
 async function activateUser(token: string) {
   try {
-    const response = await baseAXios.post(`/activate/`, {
+    const response = await baseAXios.post(`/user/activate/`, {
       token: token
     });
     if (response && response.status == 200) {
@@ -106,7 +123,7 @@ async function activateUser(token: string) {
 
 async function validatePasswordResetToken(token: string) {
   try {
-    const response = await baseAXios.post(`/password-reset/validate/`, {
+    const response = await baseAXios.post(`/user/password-reset/validate/`, {
       token: token
     });
     if (response && response.status == 200) {
@@ -120,7 +137,7 @@ async function validatePasswordResetToken(token: string) {
 
 async function resetPasswordRequest(email: string) {
   try {
-    const response = await baseAXios.post(`/password-reset/`, {
+    const response = await baseAXios.post(`/user/password-reset/`, {
       email: email
     });
     if (response && response.status == 200) {
@@ -134,7 +151,7 @@ async function resetPasswordRequest(email: string) {
 
 async function passwordChange(token: string, newPassword: string) {
   try {
-    const response = await baseAXios.post(`/password-reset/change`, {
+    const response = await baseAXios.post(`/user/password-reset/change`, {
       token: token,
       password: newPassword
     });
@@ -149,7 +166,7 @@ async function passwordChange(token: string, newPassword: string) {
 
 async function sendActivationEmail() {
   try {
-    const response = await baseAXios.get(`/resend-confirmation/`);
+    const response = await baseAXios.get(`/user/resend-confirmation/`);
     if (response && response.status == 200) {
       return response;
     }
@@ -166,6 +183,7 @@ export default {
   activateUser,
   validateUser,
   loginUser,
+  loginGoogleUser,
   validatePasswordResetToken,
   resetPasswordRequest,
   passwordChange,

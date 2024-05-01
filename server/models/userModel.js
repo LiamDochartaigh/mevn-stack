@@ -1,6 +1,12 @@
 const { Schema, model } = require('mongoose');
 
 const UserSchema = new Schema({
+  authType: {
+    type: String,
+    default: "local",
+    required: true,
+    enum: ["local", "google"]
+  },
   email: {
     type: String,
     required: true,
@@ -8,7 +14,7 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    default: ''
   },
   role: {
     type: String,
@@ -60,6 +66,7 @@ UserSchema.set('toJSON', {
     delete ret.refresh_token;
     delete ret.password_reset_token;
     delete ret.password_reset_expires;
+    delete ret.authType;
     return ret;
   }
 });

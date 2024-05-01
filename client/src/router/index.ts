@@ -8,6 +8,7 @@ import UserActivated from '../views/UserActivated.vue';
 import ChangePassword from '../views/ChangePassword.vue';
 import PasswordReset from '../views/PasswordReset.vue'
 import Login from '../views/Login.vue';
+import Google from '../views/auth callbacks/Google.vue'
 
 export function MoveRoute(to: RouteRecordRaw | undefined) {
   if (router.currentRoute.value.name == to?.name) {
@@ -83,6 +84,11 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       title: "Login"
     }
+  },
+  {
+    path: '/auth/google/callback',
+    name: "google-auth",
+    component: Google,
   }
 ]
 

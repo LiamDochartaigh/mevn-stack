@@ -1,4 +1,3 @@
-const { model } = require("mongoose");
 const userService = require("../services/userService");
 const {DefaultCookie} = require("../services/authService");
 

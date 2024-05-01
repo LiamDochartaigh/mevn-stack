@@ -6,15 +6,34 @@ const crypto = require("crypto");
 async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
-  user = await User.create({ email, password });
+  user = await User.create({ email, password, authType: "local"});
   SendEmailConfirmation(user);
   await AuthenticateUser(user);
   return user;
 }
 
+async function RegisterOrLoginGoogleUser(email, picture) {
+  const user = await GetUserByEmail(email);
+  if (user) {
+    user.user_avatar_URL = picture;
+    user.authType = "google";
+    user.password = '';
+    await user.save();
+    await AuthenticateUser(user); return user;
+  }
+  else {
+    const newUser = await User.create({ email, user_avatar_URL: picture, email_confirmed: true, authType: "google"});
+    await AuthenticateUser(newUser);
+    return newUser;
+  }
+}
+
 async function SendEmailConfirmation(user) {
-  if(!user){throw new Error("Invalid User")}
-  if(user.email_confirmed){ throw new Error("Email already confirmed"); }
+  if (!user) { throw new Error("Invalid User") }
+  if (user.email_confirmed) { throw new Error("Email already confirmed"); }
+  // If the ten minutes have not passed since the last confirmation email was sent
+  if (user.confirmation_token_expires - (3300000) > Date.now()) { throw new Error("Confirmation token already sent") }
+
   const confirmationToken = crypto.randomBytes(20).toString('hex');
   user.confirmation_token = confirmationToken;
   user.confirmation_token_expires = Date.now() + 3600000;
@@ -57,6 +76,7 @@ async function AuthenticateUser(user) {
 async function LogInUser(email, password) {
   const user = await GetUserByEmail(email);
   if (!user) { throw new Error("User not found"); }
+  if(user.authType !== "local") { throw new Error("Non native user"); }
   if (user.password !== password) { throw new Error("Invalid password"); }
   await AuthenticateUser(user);
   return user;
@@ -109,9 +129,10 @@ async function SetUsersAccessToken(user, token) {
 
 async function ResetUserPasswordRequest(email) {
   const user = await GetUserByEmail(email);
-  if (!user || !user._id || !user.save) {
-    throw new Error("User not found");
-  }
+  if (!user || !user._id || !user.save) { throw new Error("User not found"); }
+  // If the five minutes have not passed since the last password reset email was sent
+  if (user.password_reset_expires - (900000) > Date.now()) { throw new Error("Password reset token already sent") }
+
   const resetToken = GenerateEmailResetToken();
   user.password_reset_token = resetToken;
   user.password_reset_expires = Date.now() + 1200000;
@@ -131,6 +152,7 @@ async function ChangePassword(token, password) {
   user.password = password;
   user.password_reset_token = "";
   user.password_reset_expires = "";
+  user.password_reset_token_createdAt = "";
   await user.save();
 }
 
@@ -145,5 +167,6 @@ module.exports = {
   ValidatePasswordResetToken,
   ChangePassword,
   GetUserByEmail,
-  SendEmailConfirmation
+  SendEmailConfirmation,
+  RegisterOrLoginGoogleUser
 };

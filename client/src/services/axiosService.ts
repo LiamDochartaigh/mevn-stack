@@ -5,6 +5,8 @@ const baseAXios = axios.create({
   withCredentials: true
 });
 
+axios.defaults.headers.common['Cache-Control'] = 'no-cache';
+
 baseAXios.interceptors.response.use(
   response => {
     return new Promise(resolve => {

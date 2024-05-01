@@ -80,17 +80,17 @@ const validatePasswordChange = [
   }
 ];
 
-router.post("/login", validateUserLogIn, user.logIn);
-router.post("/register", validateRegisterUser, user.registerUser);
-router.get("/validate", authenticate, user.validateUser);
-router.get("/logout", authenticate, user.logOut);
-router.post("/activate/", validateConfirmationToken, user.activateAccount);
-router.post("/password-reset", validatePasswordResetRequest, user.resetUserPasswordRequest);
-router.post("/password-reset/validate", validatePasswordReset, user.validatePasswordResetToken);
-router.post("/password-reset/change", validatePasswordChange, user.changePassword);
-router.get("/resend-confirmation", authenticate, user.sendConfirmationEmail);
+router.post("/user/login", validateUserLogIn, user.logIn);
+router.post("/user/register", validateRegisterUser, user.registerUser);
+router.get("/user/validate", authenticate, user.validateUser);
+router.get("/user/logout", authenticate, user.logOut);
+router.post("/user/activate/", validateConfirmationToken, user.activateAccount);
+router.post("/user/password-reset", validatePasswordResetRequest, user.resetUserPasswordRequest);
+router.post("/user/password-reset/validate", validatePasswordReset, user.validatePasswordResetToken);
+router.post("/user/password-reset/change", validatePasswordChange, user.changePassword);
+router.get("/user/resend-confirmation", authenticate, user.sendConfirmationEmail);
 
 //Get rid of after testing
-router.get("/user", authenticate, user.getUser);
+router.get("/user/", authenticate, user.getUser);
 
 module.exports = router;

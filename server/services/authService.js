@@ -40,5 +40,5 @@ module.exports = {
     GenerateRefreshToken,
     VerifyToken,
     GenerateEmailResetToken,
-    DefaultCookie
+    DefaultCookie,
 }

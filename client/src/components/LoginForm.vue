@@ -35,6 +35,11 @@
                     Forgot Password?
                 </RouterLink>
             </v-card-actions>
+            <v-card-actions class="justify-center flex-column">
+                <v-btn class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded @click="loginGoogle">
+                    <v-icon>mdi-google</v-icon> Login
+                </v-btn>
+            </v-card-actions>
         </v-form>
         <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
     </v-card>
@@ -42,7 +47,7 @@
 
 <script setup lang="ts">
 
-import { ref, Ref} from "vue"
+import { ref, Ref } from "vue"
 import { VForm } from "vuetify/components"
 import userService from '../services/userService';
 import LoadingScreen from '../components/LoadingScreen.vue';
@@ -78,6 +83,15 @@ const loginSubmit = async () => {
     else {
         router.push({ name: 'home' });
     }
+};
+
+const loginGoogle = async () => {
+    const clientId = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
+    const redirectUri = encodeURIComponent(import.meta.env.VITE_APP_GOOGLE_REDIRECT_URL);
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile');
+    const responseType = 'code';
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}&prompt=consent`;
+    window.location.href = authUrl;
 };
 </script>
 
