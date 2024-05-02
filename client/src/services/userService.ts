@@ -71,7 +71,9 @@ export async function loginGoogleUser(code: string) {
 
 async function logOutUser() {
   try {
+    useUIStore().showLoading();
     const response = await baseAXios.get(`/user/logout`);
+    useUIStore().hideLoading();
     if (response && response.status == 200) {
       useUserStore().logOut();
       return true;
@@ -80,6 +82,7 @@ async function logOutUser() {
   }
   catch (e: any) {
     console.error(e.message);
+    useUIStore().hideLoading();
   }
 }
 

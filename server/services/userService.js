@@ -1,12 +1,19 @@
 const { User } = require("../models/userModel");
-const { GenerateJWT, GenerateRefreshToken, GenerateEmailResetToken } = require("./authService");
+const {
+  GenerateJWT,
+  GenerateRefreshToken,
+  GenerateEmailResetToken,
+  VerifyPassword,
+  HashPassword
+ } = require("./authService");
 const { sendConfirmationEmail, sendPasswordResetEmail, sendWelcomeEmail} = require("./emailService");
 const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
-  user = await User.create({ email, password, authType: "local"});
+  const hashedPassword = await HashPassword(password);
+  user = await User.create({ email, password: hashedPassword, authType: "local"});
   await SendEmailConfirmation(user);
   await sendWelcomeEmail(user.email);
   await AuthenticateUser(user);
@@ -14,7 +21,7 @@ async function RegisterUser(email, password) {
 }
 
 async function RegisterOrLoginGoogleUser(email, picture) {
-  const user = await GetUserByEmail(email);
+  let user = await GetUserByEmail(email);
 
   //Convert existing user to google user
   if (user && user.authType !== "google") {
@@ -25,8 +32,8 @@ async function RegisterOrLoginGoogleUser(email, picture) {
     await user.save();
   }//No existing user
   else if(!user) {
-    const newUser = await User.create({ email, user_avatar_URL: picture, email_confirmed: true, authType: "google"});
-    await sendWelcomeEmail(newUser.email);
+    user = await User.create({ email, user_avatar_URL: picture, email_confirmed: true, authType: "google"});
+    await sendWelcomeEmail(user.email);
   }
 
   await AuthenticateUser(user);
@@ -81,7 +88,8 @@ async function LogInUser(email, password) {
   const user = await GetUserByEmail(email);
   if (!user) { throw new Error("User not found"); }
   if(user.authType !== "local") { throw new Error("Non native user"); }
-  if (user.password !== password) { throw new Error("Invalid password"); }
+  const passwordMatch = await VerifyPassword(password, user.password);
+  if (!passwordMatch) { throw new Error("Invalid password"); }
   await AuthenticateUser(user);
   return user;
 }
@@ -154,7 +162,8 @@ async function ValidatePasswordResetToken(token) {
 async function ChangePassword(token, password) {
   const user = await User.findOne({ password_reset_token: token, password_reset_expires: { $gt: Date.now() } });
   if (!user) { throw new Error('Invalid token or token expired'); }
-  user.password = password;
+  const hashedPassword = await HashPassword(password);
+  user.password = hashedPassword;
   user.password_reset_token = "";
   user.password_reset_expires = "";
   user.password_reset_token_createdAt = "";

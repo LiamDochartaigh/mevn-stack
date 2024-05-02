@@ -39,7 +39,7 @@
                 <v-divider class="mr-8"></v-divider>
             </div>
             <v-card-actions class="justify-center flex-column mb-2">
-                <googleLoginButton :onClick="loginGoogle" />
+                <GoogleLoginButton :onClick="loginGoogle" />
             </v-card-actions>
         </v-form>
         <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false"/>
@@ -51,7 +51,7 @@ import { ref, Ref } from "vue";
 import { VForm } from "vuetify/components";
 import userService from "../services/userService";
 import LoadingScreen from "../components/LoadingScreen.vue";
-import googleLoginButton from "./googleLoginButton.vue";
+import GoogleLoginButton from "./GoogleLoginButton.vue";
 
 const registerError = ref(false);
 const signupValid = ref(false);

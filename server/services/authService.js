@@ -1,5 +1,7 @@
 const { sign, verify } = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 function DefaultCookie(age) {
     return {
@@ -35,10 +37,34 @@ function GenerateEmailResetToken() {
     return randomBytes(20).toString('hex');
 }
 
+
+async function HashPassword(password) {
+    try {
+        const hash = await bcrypt.hash(password, saltRounds);
+        return hash;
+    } catch (error) {
+        console.error('Hashing error:', error);
+        throw error;
+    }
+}
+
+async function VerifyPassword(password, storedHash) {
+    try {
+        const match = await bcrypt.compare(password, storedHash);
+        return match;
+    } catch (error) {
+        console.error('Password verification error:', error);
+        throw error;
+    }
+}
+
+
 module.exports = {
     GenerateJWT,
     GenerateRefreshToken,
     VerifyToken,
     GenerateEmailResetToken,
     DefaultCookie,
+    HashPassword,
+    VerifyPassword
 }

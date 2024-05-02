@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar clipped-left flat app class="pl-3 notification-banner">
+    <v-app-bar clipped-left flat app class="notification-banner">
         <v-row class="align-center justify-center">
             <v-icon class="mr-2">{{ icon }}</v-icon>
             <span class="mr-4">{{message}}</span>
