@@ -35,10 +35,13 @@
                     Forgot Password?
                 </RouterLink>
             </v-card-actions>
-            <v-card-actions class="justify-center flex-column">
-                <v-btn class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded @click="loginGoogle">
-                    <v-icon>mdi-google</v-icon> Login
-                </v-btn>
+            <div class="d-flex py-3 justify-space-between align-center">
+                <v-divider class="ml-8"></v-divider>
+                <span class="pr-2 pl-2">OR</span>
+                <v-divider class="mr-8"></v-divider>
+            </div>
+            <v-card-actions class="justify-center flex-column mb-2">
+                <googleLoginButton :onClick="loginGoogle" />
             </v-card-actions>
         </v-form>
         <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
@@ -52,6 +55,7 @@ import { VForm } from "vuetify/components"
 import userService from '../services/userService';
 import LoadingScreen from '../components/LoadingScreen.vue';
 import router from "../router";
+import googleLoginButton from "./googleLoginButton.vue";
 
 const loginError = ref(false);
 const loginValid = ref(false);

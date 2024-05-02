@@ -1,31 +1,36 @@
 const { User } = require("../models/userModel");
 const { GenerateJWT, GenerateRefreshToken, GenerateEmailResetToken } = require("./authService");
-const { sendConfirmationEmail, sendPasswordResetEmail } = require("./emailService");
+const { sendConfirmationEmail, sendPasswordResetEmail, sendWelcomeEmail} = require("./emailService");
 const crypto = require("crypto");
 
 async function RegisterUser(email, password) {
   let user = await GetUserByEmail(email);
   if (user) { throw new Error("User already exists"); }
   user = await User.create({ email, password, authType: "local"});
-  SendEmailConfirmation(user);
+  await SendEmailConfirmation(user);
+  await sendWelcomeEmail(user.email);
   await AuthenticateUser(user);
   return user;
 }
 
 async function RegisterOrLoginGoogleUser(email, picture) {
   const user = await GetUserByEmail(email);
-  if (user) {
+
+  //Convert existing user to google user
+  if (user && user.authType !== "google") {
     user.user_avatar_URL = picture;
     user.authType = "google";
+    user.email_confirmed = true;
     user.password = '';
     await user.save();
-    await AuthenticateUser(user); return user;
-  }
-  else {
+  }//No existing user
+  else if(!user) {
     const newUser = await User.create({ email, user_avatar_URL: picture, email_confirmed: true, authType: "google"});
-    await AuthenticateUser(newUser);
-    return newUser;
+    await sendWelcomeEmail(newUser.email);
   }
+
+  await AuthenticateUser(user);
+  return user;
 }
 
 async function SendEmailConfirmation(user) {
@@ -40,7 +45,6 @@ async function SendEmailConfirmation(user) {
   await user.save();
   await sendConfirmationEmail(
     user.email,
-    "Please Verify Your Hexeum Account",
     confirmationToken);
 }
 
@@ -130,13 +134,14 @@ async function SetUsersAccessToken(user, token) {
 async function ResetUserPasswordRequest(email) {
   const user = await GetUserByEmail(email);
   if (!user || !user._id || !user.save) { throw new Error("User not found"); }
+  if(user.authType !== 'local'){throw new Error("Non Local User Cannot Reset Password");}
   // If the five minutes have not passed since the last password reset email was sent
   if (user.password_reset_expires - (900000) > Date.now()) { throw new Error("Password reset token already sent") }
 
   const resetToken = GenerateEmailResetToken();
   user.password_reset_token = resetToken;
   user.password_reset_expires = Date.now() + 1200000;
-  await sendPasswordResetEmail(user.email, "Password Reset Request", resetToken);
+  await sendPasswordResetEmail(user.email, resetToken);
   await user.save();
 }
 

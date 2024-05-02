@@ -3,16 +3,35 @@ const Mailgun = require('mailgun.js');
 const mailgun = new Mailgun(formData);
 const mg = mailgun.client({ username: 'api', key: process.env.MAILGUN_API_KEY });
 
-async function sendConfirmationEmail(to, subject, confirmationToken) {
+const organzationName = process.env.ORGANIZATION_NAME; 
+
+async function sendWelcomeEmail(to) {
   try {
     await mg.messages.create(process.env.MAILGUN_DOMAIN, {
-      from: `Hexeum <${process.env.MAILGUN_FROM}>`,
+      from: `${organzationName} <${process.env.MAILGUN_FROM}>`,
       to: to,
-      subject: subject,
+      subject: `Welcome To ${organzationName}`,
+      template: "welcome_template",
+      'h:X-Mailgun-Variables': JSON.stringify(
+        { organization_name: organzationName }
+      )
+    });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Error sending email', error);
+  }
+}
+
+async function sendConfirmationEmail(to, confirmationToken) {
+  try {
+    await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+      from: `${organzationName} <${process.env.MAILGUN_FROM}>`,
+      to: to,
+      subject: 'Please Verify Your Hexeum Account',
       template: "confirmation_template",
       'h:X-Mailgun-Variables': JSON.stringify(
         { account_confirmation_link: `${process.env.CLIENT_URL}activate/?token=${confirmationToken}`,
-        organization_name: 'Hexeum'}
+        organization_name: organzationName}
       )
     });
   } catch (error) {
@@ -21,16 +40,16 @@ async function sendConfirmationEmail(to, subject, confirmationToken) {
   }
 }
 
-async function sendPasswordResetEmail(to, subject, resetToken) {
+async function sendPasswordResetEmail(to, resetToken) {
   try {
     await mg.messages.create(process.env.MAILGUN_DOMAIN, {
-      from: `Hexeum <${process.env.MAILGUN_FROM}>`,
+      from: `${organzationName} <${process.env.MAILGUN_FROM}>`,
       to: to,
-      subject: subject,
+      subject: 'Password Reset Request',
       template: "password_reset_template",
       'h:X-Mailgun-Variables': JSON.stringify(
         { password_reset_link: `${process.env.CLIENT_URL}recovery/?token=${resetToken}`,
-        organization_name: 'Hexeum'}
+        organization_name: organzationName}
 
       )
     });
@@ -40,4 +59,4 @@ async function sendPasswordResetEmail(to, subject, resetToken) {
   }
 }
 
-module.exports = { sendConfirmationEmail, sendPasswordResetEmail };
+module.exports = { sendConfirmationEmail, sendPasswordResetEmail, sendWelcomeEmail };

@@ -33,6 +33,14 @@
                     Register
                 </v-btn>
             </v-card-actions>
+            <div class="d-flex py-3 justify-space-between align-center">
+                <v-divider class="ml-8"></v-divider>
+                <span class="pr-2 pl-2">OR</span>
+                <v-divider class="mr-8"></v-divider>
+            </div>
+            <v-card-actions class="justify-center flex-column mb-2">
+                <googleLoginButton :onClick="loginGoogle" />
+            </v-card-actions>
         </v-form>
         <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false"/>
     </v-card>
@@ -43,6 +51,7 @@ import { ref, Ref } from "vue";
 import { VForm } from "vuetify/components";
 import userService from "../services/userService";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import googleLoginButton from "./googleLoginButton.vue";
 
 const registerError = ref(false);
 const signupValid = ref(false);
@@ -71,6 +80,15 @@ const signUpSubmit = async () => {
         sendingRequest.value = false;
         if (!response) { registerError.value = true; }
     }
+};
+
+const loginGoogle = async () => {
+    const clientId = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
+    const redirectUri = encodeURIComponent(import.meta.env.VITE_APP_GOOGLE_REDIRECT_URL);
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile');
+    const responseType = 'code';
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}&prompt=consent`;
+    window.location.href = authUrl;
 };
 
 </script>
