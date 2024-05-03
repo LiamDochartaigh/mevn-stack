@@ -14,9 +14,6 @@ require("dotenv").config();
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(morgan("common"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cookieParser());
 
 const limiter = rateLimit({
@@ -41,8 +38,14 @@ db.mongoose.connection.once('open', () => {
   console.log('Database connection successful');
 });
 
-//Routes
-app.use("/", require("./routes"));
+
+//Routes before body parser
+app.use("/", require("./routes/webhookRoutes"));
+
+//Routes that require body parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/", require("./routes/mainRoutes"));
 
 // Provide a default port
 const port = process.env.PORT || 80;

@@ -8,7 +8,7 @@ function DefaultCookie(age) {
         maxAge: age,
         httpOnly: true,
         secure: true,
-        sameSite: 'none'
+        sameSite: 'strict'
     }
 }
 
