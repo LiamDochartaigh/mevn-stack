@@ -9,14 +9,14 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="auto">
-        <router-link :to="RouteIdentifier.Dashboard.path">
-          <v-card elevation="2" max-width="400px" class="rounded-xl hvr-shrink">
-            <v-img class="align-end" src="">
-            </v-img>
-            <v-card-title>Page 1</v-card-title>
-            <v-card-subtitle>Page Description Here</v-card-subtitle>
-          </v-card>
-        </router-link>
+        <v-card v-for="product in products" :key="product._id" elevation="2" max-width="400px"
+        @click="BuyProduct(product)"
+          class="rounded-xl hvr-shrink">
+          <v-img class="align-end" :src="product.image_URL">
+          </v-img>
+          <v-card-title>{{ product.name }}</v-card-title>
+          <v-card-subtitle>{{ product.description }}</v-card-subtitle>
+        </v-card>
       </v-col>
     </v-row>
   </DefaultLayout>
@@ -24,5 +24,19 @@
 
 <script setup lang="ts">
 import DefaultLayout from "../layouts/DefaultLayout.vue";
-import { RouteIdentifier } from "../router";
+import { onMounted, ref } from 'vue';
+import { Product, getProducts} from "../services/productService";
+import { initiateStripePurchase } from "../services/paymentService";
+
+const products = ref<Product[] | undefined>([]);
+
+async function BuyProduct(product: Product) {
+  const products = [product];
+  const stripeCheckoutURL = await initiateStripePurchase(products);
+  window.location.href = stripeCheckoutURL;
+}
+
+onMounted(async() => {
+  products.value = await getProducts();
+});
 </script>
