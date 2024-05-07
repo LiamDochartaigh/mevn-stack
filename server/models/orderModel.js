@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const OrderSchema = new Schema({
-    user_ID: {
+    user_Id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -40,6 +40,10 @@ const OrderSchema = new Schema({
         type: String,
         required: true,
         enum: ['Stripe', 'PayPal'],
+    },
+    internal_Session_ID: {
+        type: String,
+        required: true,
     },
     stripe_Session_ID: {
         type: String,

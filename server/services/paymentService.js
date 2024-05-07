@@ -1,7 +1,12 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { CreateOrder } = require('../services/orderService');
+const { CreateCheckoutSession, CloseCheckoutSession } = require('../services/checkoutSessionService');
 
 async function StripeCheckoutSession(user, productsData, successURL, cancelURL) {
+    
+    //Create internal checkout session that we can use to track the order
+    const internalSession = await CreateCheckoutSession(user.id, "stripe")
+    
     const line_items = productsData.map((product) => {
         return {
             price_data: {
@@ -22,11 +27,14 @@ async function StripeCheckoutSession(user, productsData, successURL, cancelURL) 
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
+        metadata: {
+            internal_session_id: internalSession.id.toString()
+        },
         client_reference_id: user.id,
         customer_email: user.email,
         line_items: line_items,
         mode: 'payment',
-        success_url: successURL,
+        success_url: `${successURL}?session_id=${internalSession.id.toString()}`,
         cancel_url: cancelURL,
         tax_id_collection: {
             enabled: true,
@@ -55,6 +63,8 @@ async function StripeCheckoutComplete(requestBody, signature) {
             }
         });
 
+        await CloseCheckoutSession(retrievedSession.metadata.internal_session_id);
+
         const order = await CreateOrder(
             retrievedSession.client_reference_id,
             productsData,
@@ -63,6 +73,7 @@ async function StripeCheckoutComplete(requestBody, signature) {
             "completed",
             "Stripe",
             retrievedSession.id,
+            retrievedSession.metadata.internal_session_id,
             ""
         );
     }

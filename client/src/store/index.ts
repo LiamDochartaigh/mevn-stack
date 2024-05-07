@@ -42,19 +42,29 @@ export const useUserStore = defineStore({
     state: () => ({
         isAuthenticated: false,
         user: <User | null>null,
+        loginPrompt: false
     }),
     getters: {
         isLoggedIn: (state) => state.isAuthenticated,
-        getUser: (state) => state.user
+        getUser: (state) => state.user,
     },
     actions: {
-        async logOut() {
+        promptLogin() {
+            if (!this.isAuthenticated) {
+                this.loginPrompt = true;
+            }
+        },
+        closeLoginPrompt() {
+            this.loginPrompt = false;
+        },
+        logOut() {
             this.user = null;
             this.isAuthenticated = false;
         },
-        async logIn(user: User) {
+        logIn(user: User) {
             this.user = user;
             this.isAuthenticated = true;
+            this.loginPrompt = false;
         }
     }
 });

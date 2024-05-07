@@ -21,7 +21,8 @@
           </template>
           <RegisterForm />
         </v-dialog>
-        <v-dialog transition="scale-transition" width="500">
+        <v-dialog v-model="authStore.loginPrompt"
+          transition="scale-transition" width="500">
           <template v-slot:activator="{ props }">
             <v-btn class="hvr-shrink bg-primary mr-2" rounded v-bind="props" target="_blank">
               <span>Log In</span>
@@ -69,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { MoveRoute, RouteIdentifier } from "../router";
 import logo from "../assets/Logo.png";
 import defaultAvatar from "../assets/default_avatar.webp";
@@ -92,7 +93,7 @@ const userAvatar = computed(() => {
 });
 
 const logOutAction = async function () {
-  const loggedOut = await userService.logOutUser();
+  const loggedOut = await userService.logOutUser();  
   if (loggedOut) {
     MoveRoute(RouteIdentifier.Home);
   }

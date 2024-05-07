@@ -10,8 +10,7 @@
     <v-row justify="center">
       <v-col cols="auto">
         <v-card v-for="product in products" :key="product._id" elevation="2" max-width="400px"
-        @click="BuyProduct(product)"
-          class="rounded-xl hvr-shrink">
+          @click="BuyProduct(product)" class="rounded-xl hvr-shrink">
           <v-img class="align-end" :src="product.image_URL">
           </v-img>
           <v-card-title>{{ product.name }}</v-card-title>
@@ -25,18 +24,26 @@
 <script setup lang="ts">
 import DefaultLayout from "../layouts/DefaultLayout.vue";
 import { onMounted, ref } from 'vue';
-import { Product, getProducts} from "../services/productService";
+import { Product, getProducts } from "../services/productService";
 import { initiateStripePurchase } from "../services/paymentService";
+import { useUserStore, useUIStore} from "../store";
 
+const uiStore = useUIStore();
 const products = ref<Product[] | undefined>([]);
+const userStore = useUserStore();
 
 async function BuyProduct(product: Product) {
   const products = [product];
+  uiStore.showLoading();
   const stripeCheckoutURL = await initiateStripePurchase(products);
-  window.location.href = stripeCheckoutURL;
+  uiStore.hideLoading();
+  if (stripeCheckoutURL) { window.location.href = stripeCheckoutURL; }
+  else {
+    userStore.promptLogin();
+  }
 }
 
-onMounted(async() => {
+onMounted(async () => {
   products.value = await getProducts();
 });
 </script>

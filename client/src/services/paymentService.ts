@@ -11,8 +11,8 @@ export async function initiateStripePurchase(products: Product[]) {
         });
         const response = await baseAXios.post(`/payment/stripe-checkout-session/`, {
             products: mappedProducts,
-            success_url: import.meta.env.VITE_APP_BASE_URL + 'success',
-            cancel_url: import.meta.env.VITE_APP_BASE_URL + 'cancel'
+            success_url: import.meta.env.VITE_APP_BASE_URL + 'order-complete',
+            cancel_url: import.meta.env.VITE_APP_BASE_URL
         });
         if (response && response.status == 200) {
             return response.data;

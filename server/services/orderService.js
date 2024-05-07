@@ -8,16 +8,18 @@ async function CreateOrder(
     status,
     paymentMethod,
     stripeSessionID,
+    internalSessionID,
     notes)
     {
     const order = await Order.create({
-        user_ID: userID,
+        user_Id: userID,
         products: products,
         order_Total: totalCost,
         purchase_Date: purchaseDate,
         status: status,
         payment_Method: paymentMethod,
         stripe_Session_ID: stripeSessionID,
+        internal_Session_ID: internalSessionID,
         notes: notes
     });
 
