@@ -1,50 +1,44 @@
 <template>
     <DefaultLayout>
-        <v-row v-if="!isLoading" class="text-center justify-center">
-            <v-col cols="12"></v-col>
-            <v-col cols="8" class="mb-4 mt-15">
-                <v-card>
-                    <v-card-title class="text-h5  text-center bg-primary">
-                        Change Your Password
-                    </v-card-title>
+        <v-card v-if="!isLoading">
+            <v-card-title class="text-h5  text-center bg-primary">
+                Change Your Password
+            </v-card-title>
 
-                    <v-form ref="passwordResetForm" v-model="passwordResetValid" @submit.prevent="passwordChangeSubmit">
-                        <v-card-text class="text-center">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-alert v-if="error" type="error" dense dismissible>
-                                        Password reset link is invalid or has expired.
-                                    </v-alert>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field @click:append-inner="showNewPassword = !showNewPassword"
-                                        :type="showNewPassword ? 'text' : 'password'" v-model="newPassword"
-                                        :rules="passwordRules" autocomplete="current-password"
-                                        :append-inner-icon="showNewPassword ? 'mdi-eye-off' : 'mdi-eye'" required
-                                        label="New Password" outlined></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-text-field
-                                        @click:append-inner="showPasswordConfirmation = !showPasswordConfirmation"
-                                        :type="showPasswordConfirmation ? 'text' : 'password'" v-model="confirmPassword"
-                                        :rules="confirmPasswordRules" autocomplete="current-password"
-                                        :append-inner-icon="showPasswordConfirmation ? 'mdi-eye-off' : 'mdi-eye'"
-                                        required label="Confirm New Password" outlined></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-card-text>
-                        <v-card-actions class="justify-center">
-                            <v-btn class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded type="submit">
-                                Reset Password
-                            </v-btn>
-                        </v-card-actions>
-                    </v-form>
-                    <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
-                </v-card>
-            </v-col>
-        </v-row>
+            <v-form ref="passwordResetForm" v-model="passwordResetValid" @submit.prevent="passwordChangeSubmit">
+                <v-card-text class="text-center">
+                    <v-row>
+                        <v-col cols="12">
+                            <v-alert v-if="error" type="error" dense dismissible>
+                                Password reset link is invalid or has expired.
+                            </v-alert>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field @click:append-inner="showNewPassword = !showNewPassword"
+                                :type="showNewPassword ? 'text' : 'password'" v-model="newPassword"
+                                :rules="passwordRules" autocomplete="current-password"
+                                :append-inner-icon="showNewPassword ? 'mdi-eye-off' : 'mdi-eye'" required
+                                label="New Password" outlined></v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-text-field @click:append-inner="showPasswordConfirmation = !showPasswordConfirmation"
+                                :type="showPasswordConfirmation ? 'text' : 'password'" v-model="confirmPassword"
+                                :rules="confirmPasswordRules" autocomplete="current-password"
+                                :append-inner-icon="showPasswordConfirmation ? 'mdi-eye-off' : 'mdi-eye'" required
+                                label="Confirm New Password" outlined></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions class="justify-center">
+                    <v-btn class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded type="submit">
+                        Reset Password
+                    </v-btn>
+                </v-card-actions>
+            </v-form>
+            <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
+        </v-card>
     </DefaultLayout>
 </template>
 

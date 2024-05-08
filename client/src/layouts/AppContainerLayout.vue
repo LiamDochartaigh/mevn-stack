@@ -21,8 +21,7 @@
           </template>
           <RegisterForm />
         </v-dialog>
-        <v-dialog v-model="authStore.loginPrompt"
-          transition="scale-transition" width="500">
+        <v-dialog v-model="authStore.loginPrompt" transition="scale-transition" width="500">
           <template v-slot:activator="{ props }">
             <v-btn class="hvr-shrink bg-primary mr-2" rounded v-bind="props" target="_blank">
               <span>Log In</span>
@@ -57,7 +56,9 @@
     </v-app-bar>
 
     <v-main class="main">
-      <slot></slot>
+      <v-container>
+        <slot></slot>
+      </v-container>
     </v-main>
     <v-footer>
       <v-row justify="center" no-gutters>
@@ -93,7 +94,7 @@ const userAvatar = computed(() => {
 });
 
 const logOutAction = async function () {
-  const loggedOut = await userService.logOutUser();  
+  const loggedOut = await userService.logOutUser();
   if (loggedOut) {
     MoveRoute(RouteIdentifier.Home);
   }

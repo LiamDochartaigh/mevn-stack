@@ -107,6 +107,10 @@ async function GetUserByEmail(email) {
   return user;
 }
 
+async function GetUserById(id) {
+  return await User.findById(id);
+}
+
 async function SetUsersRefreshToken(user, token) {
   if (!user || !user._id || !user.save) {
     throw new Error("User not found");
@@ -182,5 +186,6 @@ module.exports = {
   ChangePassword,
   GetUserByEmail,
   SendEmailConfirmation,
-  RegisterOrLoginGoogleUser
+  RegisterOrLoginGoogleUser,
+  GetUserById
 };

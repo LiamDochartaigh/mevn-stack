@@ -6,12 +6,17 @@ import vuetify from './plugins/vuetify';
 import userService from './services/userService';
 import 'reflect-metadata';
 
-const pinia = createPinia();
+async function initializeApp() {
+    const app = createApp(App);
+    const pinia = createPinia();
 
-const app = createApp(App);
-app.use(pinia);
-app.use(router);
-app.use(vuetify);
-app.mount('#app');
+    app.use(pinia);
+    app.use(router);
+    app.use(vuetify);
 
-userService.validateUser();
+    await userService.validateUser();
+
+    app.mount('#app');
+}
+
+initializeApp();

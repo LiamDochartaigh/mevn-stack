@@ -1,5 +1,6 @@
 <template>
-    <v-card>
+    <div class="d-flex text-center justify-center">
+    <v-card :max-width="600" :min-width="600">
         <v-card-title class="text-h5  text-center bg-primary">
             Log In
         </v-card-title>
@@ -46,6 +47,7 @@
         </v-form>
         <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
     </v-card>
+    </div>
 </template>
 
 <script setup lang="ts">

@@ -2,24 +2,25 @@ import { baseAXios } from "./axiosService"
 import { IsDefined } from 'class-validator';
 import { validateAndTransform } from '../util/dataValidation';
 
-export class Ordder {
+interface Product {
+    product_ID: string;
+    quantity: number;
+    unit_Price: number;
+    name: string;
+}
+
+export class Order {
     @IsDefined()
     _id: string;
     @IsDefined()
-    name: string;
+    order_Total: number;
     @IsDefined()
-    description: string;
-    @IsDefined()
-    price: number;
-    @IsDefined()
-    image_URL: string;
+    products: Product[];
 
-    constructor(id: string, name: string, description: string, price: number, image_URL: string) {
+    constructor(id: string, order_Total: number, products: Product[]) {
         this._id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.image_URL = image_URL;
+        this.order_Total = order_Total;
+        this.products = products;
     }
 }
 
@@ -29,7 +30,9 @@ export async function GetOrder(sessionId: string){
             checkout_session_id: sessionId
         });
         if (response && response.status == 200 && response.data) {
-            return response.data;
+            console.log(response.data);
+            const order = await validateAndTransform(Order, response.data as Order);
+            return order;
         }
     } catch (e: any) {
         console.error(e.message);

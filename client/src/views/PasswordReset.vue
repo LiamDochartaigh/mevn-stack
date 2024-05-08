@@ -1,42 +1,38 @@
 <template>
     <DefaultLayout>
-        <v-row class="text-center justify-center">
-            <v-col cols="12"></v-col>
-            <v-col cols="8" class="mb-4 mt-15">
-                <v-card>
-                    <v-card-title class="text-h5  text-center bg-primary">
-                        Reset Your Password
-                    </v-card-title>
-
-                    <v-form ref="passwordResetForm" v-model="passwordResetValid" @submit.prevent="passwordResetSubmit">
-                        <v-card-text class="text-center">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-alert v-if="error" type="error" dense dismissible>
-                                        Password reset link is invalid or has expired.
-                                    </v-alert>
-                                    <v-alert v-if="success" type="success" dense dismissible>
-                                        We've sent you an email to make sure it's really you. Please check your inbox and click the confirmation link.
-                                    </v-alert>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field v-model="accountEmail" :disabled="requestSent" :rules="emailRules" autocomplete="email"
-                                        label="Email" outlined required></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-card-text>
-                        <v-card-actions class="justify-center">
-                            <v-btn v-if="!requestSent" class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded type="submit">
-                                Reset Password
-                            </v-btn>
-                        </v-card-actions>
-                    </v-form>
-                    <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
-                </v-card>
-            </v-col>
-        </v-row>
+        <v-card>
+            <v-card-title class="text-h5  text-center bg-primary">
+                Reset Your Password
+            </v-card-title>
+            <v-form ref="passwordResetForm" v-model="passwordResetValid" @submit.prevent="passwordResetSubmit">
+                <v-card-text class="text-center">
+                    <v-row>
+                        <v-col cols="12">
+                            <v-alert v-if="error" type="error" dense dismissible>
+                                Password reset link is invalid or has expired.
+                            </v-alert>
+                            <v-alert v-if="success" type="success" dense dismissible>
+                                We've sent you an email to make sure it's really you. Please check your inbox and click
+                                the confirmation link.
+                            </v-alert>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field v-model="accountEmail" :disabled="requestSent" :rules="emailRules"
+                                autocomplete="email" label="Email" outlined required></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions class="justify-center">
+                    <v-btn v-if="!requestSent" class="hvr-shrink pl-5 pr-5 bg-primary mb-2" size="x-large" rounded
+                        type="submit">
+                        Reset Password
+                    </v-btn>
+                </v-card-actions>
+            </v-form>
+            <LoadingScreen v-if="sendingRequest" :contained="true" :dark="false" />
+        </v-card>
     </DefaultLayout>
 </template>
 

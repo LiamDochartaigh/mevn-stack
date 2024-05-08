@@ -4,6 +4,7 @@ const auth = require("./authController");
 const payment = require("./paymentController");
 const webhook = require("./webhookController");
 const product = require("./productController");
+const order = require("./orderController");
 
 module.exports = {
     user,
@@ -11,5 +12,6 @@ module.exports = {
     auth,
     payment,
     webhook,
-    product
+    product,
+    order
 }

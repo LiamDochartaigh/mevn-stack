@@ -1,11 +1,6 @@
 <template>
     <DefaultLayout>
-        <v-row class="text-center justify-center">
-            <v-col cols="12"></v-col>
-            <v-col cols="8" class="mb-4 mt-15">
-                <LoginForm />
-            </v-col>
-        </v-row>
+            <LoginForm />
     </DefaultLayout>
 </template>
 

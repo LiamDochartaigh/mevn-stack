@@ -4,17 +4,6 @@ const { body, check, validationResult } = require('express-validator');
 const { payment } = require('../controllers');
 const {authenticate} = require('../middleware/auth');
 
-const isValidURL = (value) => {
-    return validator.isURL(value, {
-        protocols: ['http', 'https'],
-        require_protocol: true,
-        allow_underscores: true,
-        require_tld: false,
-        allow_trailing_dot: true,
-        allow_protocol_relative_urls: true,
-    });
-};
-
 const urlConfig = {
     protocols: ['http', 'https'],
     require_protocol: true,

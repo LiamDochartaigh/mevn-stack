@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { CreateOrder } = require('../services/orderService');
 const { CreateCheckoutSession, CloseCheckoutSession } = require('../services/checkoutSessionService');
+const {GetUserById} = require('../services/userService');
 
 async function StripeCheckoutSession(user, productsData, successURL, cancelURL) {
     
@@ -60,13 +61,18 @@ async function StripeCheckoutComplete(requestBody, signature) {
                 product_ID: product.price.product.metadata.product_id,
                 quantity: product.quantity,
                 unit_Price: product.price.unit_amount,
+                name: product.price.product.name
             }
         });
 
         await CloseCheckoutSession(retrievedSession.metadata.internal_session_id);
+        const user = await GetUserById(retrievedSession.client_reference_id);
 
-        const order = await CreateOrder(
+        if(!user) { throw new Error("User not found from order"); }
+
+        await CreateOrder(
             retrievedSession.client_reference_id,
+            user.email,
             productsData,
             retrievedSession.amount_total,
             new Date(),

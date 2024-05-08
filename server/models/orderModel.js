@@ -6,11 +6,19 @@ const OrderSchema = new Schema({
         ref: 'User',
         required: true,
     },
+    customer_email: {
+        type: String,
+        required: true,
+    },
     products: [
         {
             product_ID: {
                 type: Schema.Types.ObjectId,
                 ref: 'Product',
+                required: true,
+            },
+            name: {
+                type: String,
                 required: true,
             },
             quantity: {
@@ -54,6 +62,20 @@ const OrderSchema = new Schema({
         required: false,
     }
 }, { timestamps: true });
+
+OrderSchema.set('toJSON', {
+    transform: function(doc, ret) {
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      delete ret.__v;
+      delete ret.stripe_Session_ID;
+      delete ret.internal_Session_ID;
+      delete ret.user_Id;
+      delete ret.customer_email
+      return ret;
+    }
+  });
+  
 
 const Order = model("Order", OrderSchema);
 module.exports = { Order };

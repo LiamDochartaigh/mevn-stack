@@ -5,6 +5,46 @@ const mg = mailgun.client({ username: 'api', key: process.env.MAILGUN_API_KEY })
 
 const organzationName = process.env.ORGANIZATION_NAME; 
 
+async function sendNewOrderEmail(to, order) {
+  try {
+    await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+      from: `${organzationName} <${process.env.MAILGUN_FROM}>`,
+      to: to,
+      subject: `New Order Placed`,
+      template: "new_order_template",
+      'h:X-Mailgun-Variables': JSON.stringify(
+        { order_details: createHTMLOrderTable(order), organization_name: organzationName }
+      )
+    });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Error sending email', error);
+  }
+
+}
+
+function createHTMLOrderTable(order) {
+  let htmlTable = `<table style="width:100%; border-collapse: collapse;" border="1">
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Download</th>
+    </tr>`;
+
+  // Loop through each product and add a row to the table
+  order.products.forEach(product => {
+    htmlTable += `
+      <tr>
+        <td>${product.name}</td>
+        <td>${product.unit_Price}</td>
+        <td></td> <!-- Blank cell for 'Download' link -->
+      </tr>`;
+  });
+
+  htmlTable += `</table>`;
+  return htmlTable;
+}
+
 async function sendWelcomeEmail(to) {
   try {
     await mg.messages.create(process.env.MAILGUN_DOMAIN, {
@@ -59,4 +99,9 @@ async function sendPasswordResetEmail(to, resetToken) {
   }
 }
 
-module.exports = { sendConfirmationEmail, sendPasswordResetEmail, sendWelcomeEmail };
+module.exports = {
+  sendConfirmationEmail,
+  sendPasswordResetEmail,
+  sendWelcomeEmail,
+  sendNewOrderEmail
+};

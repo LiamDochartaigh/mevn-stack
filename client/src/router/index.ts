@@ -9,6 +9,7 @@ import ChangePassword from '../views/ChangePassword.vue';
 import PasswordReset from '../views/PasswordReset.vue'
 import Login from '../views/Login.vue';
 import Google from '../views/auth callbacks/Google.vue'
+import OrderComplete from '../views/OrderComplete.vue'
 
 export function MoveRoute(to: RouteRecordRaw | undefined) {
   if (router.currentRoute.value.name == to?.name) {
@@ -89,6 +90,14 @@ export const routes: Array<RouteRecordRaw> = [
     path: '/auth/google/callback',
     name: "google-auth",
     component: Google,
+  },
+  {
+    path: '/order-complete',
+    name: "order-complete",
+    component: OrderComplete,
+    meta: {
+      title: "Order Complete"
+    }
   }
 ]
 

@@ -1,7 +1,9 @@
 const {Order} = require('../models/orderModel');
+const {sendNewOrderEmail} = require('./emailService');
 
 async function CreateOrder(
-    userID, 
+    userID,
+    customerEmail,
     products,
     totalCost,
     purchaseDate,
@@ -11,8 +13,10 @@ async function CreateOrder(
     internalSessionID,
     notes)
     {
+    
     const order = await Order.create({
         user_Id: userID,
+        customer_email: customerEmail,
         products: products,
         order_Total: totalCost,
         purchase_Date: purchaseDate,
@@ -23,7 +27,14 @@ async function CreateOrder(
         notes: notes
     });
 
+    //Send order email to user
+    await sendNewOrderEmail(order.customer_email, order);
     return await order.save();
 }
 
-module.exports = { CreateOrder };
+//Only valid user should be able to fetch order
+async function GetOrderBySessionID(sessionID, userId) {
+    return await Order.findOne({internal_Session_ID: sessionID, user_Id: userId});
+}
+
+module.exports = { CreateOrder, GetOrderBySessionID };
