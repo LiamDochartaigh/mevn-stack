@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProfileView from '../views/ProfileView.vue'
-import Dashboard from '../views/Dashboard.vue'
 import NotFound from '../views/404.vue'
 import { nextTick } from 'vue';
 import UserActivated from '../views/UserActivated.vue';
@@ -41,14 +40,6 @@ export const routes: Array<RouteRecordRaw> = [
     component: NotFound,
     meta: {
       title: "Not Found"
-    }
-  },
-  {
-    path: '/dashboard',
-    name: 'dash',
-    component: Dashboard,
-    meta: {
-      title: "Dashboard"
     }
   },
   {

@@ -56,7 +56,7 @@
     </v-app-bar>
 
     <v-main class="main">
-      <v-container>
+      <v-container class="mt-4 mb-4">
         <slot></slot>
       </v-container>
     </v-main>

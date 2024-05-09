@@ -60,6 +60,12 @@ const OrderSchema = new Schema({
     notes: {
         type: String,
         required: false,
+    },
+    currency:{
+        type: String,
+        required: true,
+        default: 'usd',
+        enum: ['usd', 'eur', 'gbp']
     }
 }, { timestamps: true });
 

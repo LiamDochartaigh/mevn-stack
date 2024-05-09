@@ -30,7 +30,6 @@ export async function GetOrder(sessionId: string){
             checkout_session_id: sessionId
         });
         if (response && response.status == 200 && response.data) {
-            console.log(response.data);
             const order = await validateAndTransform(Order, response.data as Order);
             return order;
         }
