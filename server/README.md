@@ -1,4 +1,4 @@
-# hexeum-api
+# API
 
 ## Registration Route
 
